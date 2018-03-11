@@ -37,7 +37,7 @@ exchanges["gdax"] = gdaxWallets
 #exchanges["gemini"] = geminiWallets
 
 arbitrar = "USD"
-cutoff = 0.5
+cutoff = 0.75
 
 
 def doArbitrage(exchange1, exchange2, arbitrar, key, price):
