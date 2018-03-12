@@ -11,14 +11,14 @@ gdaxWallets["exchange"] = Gdax()
 gdaxWallets["LTC"] = Wallet("gdax", "LTC", 0)
 gdaxWallets["ETH"] = Wallet("gdax", "ETH", 0)
 gdaxWallets["BCH"] = Wallet("gdax", "BCH", 0)
-gdaxWallets["BTC"] = Wallet("gdax", "BTC", 0.0543)
+gdaxWallets["BTC"] = Wallet("gdax", "BTC", 0.052212)
 gdaxWallets["USD"] = Wallet("gdax", "USD", 0)
 gdaxWallets["value"] = gdaxWallets["BTC"]
 
 geminiWallets = {}
 geminiWallets["exchange"] = Gemini()
 geminiWallets["ETH"] = Wallet("gemini", "ETH", 0)
-geminiWallets["BTC"] = Wallet("gemini", "BTC", 0.0543)
+geminiWallets["BTC"] = Wallet("gemini", "BTC", 0.052212)
 geminiWallets["USD"] = Wallet("gemini", "USD", 0)
 geminiWallets["value"] = geminiWallets["BTC"]
 
@@ -109,4 +109,4 @@ while True:
             if diffp < -cutoff and exchanges[exchange2]["value"].currency == arbitrar: # price1 is higher
                 doArbitrage(exchange1, exchange2, arbitrar, key, price2)
 
-            time.sleep(2)
+            time.sleep(3)

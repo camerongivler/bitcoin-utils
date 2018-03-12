@@ -6,7 +6,10 @@ class Gdax(ExchangeBase):
     g = gdax.PublicClient()
 
     def getLastTradePrice(self, symbol):
-        return float(self.g.get_product_ticker(symbol)['price'])
+        ticker = {}
+        while not 'price' in ticker.keys():
+            ticker = self.g.get_product_ticker(symbol)
+        return float(ticker['price'])
 
     def getName(self):
         return "gdax"
