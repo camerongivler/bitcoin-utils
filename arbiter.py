@@ -39,6 +39,7 @@ exchanges["gdax"] = gdaxWallets
 arbitrar = "USD"
 cutoff = 0.75
 
+trades=[]
 
 def doArbitrage(exchange1, exchange2, arbitrar, key, price):
         sellWallet = exchanges[exchange1]["value"]
@@ -48,20 +49,16 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price):
         Exchange.exchange(sellWallet, buyWallet, sellWallet.amount, sellRate)
         exchanges[exchange1]["value"] = buyWallet
 
-        print("Sold",sellSymbol,"at",sellRate)
-        print(buyWallet.currency,"wallet:",buyWallet.amount)
-        print(sellWallet.currency,"wallet:",sellWallet.amount)
-
         sellWallet = exchanges[exchange2][arbitrar]
         buyWallet = exchanges[exchange2][key]
         buySymbol = key + "-" + arbitrar
         Exchange.exchange(sellWallet, buyWallet, sellWallet.amount, 1/price)
         exchanges[exchange2]["value"] = buyWallet
 
-        print("Bought",buySymbol,"at",price)
-        print(buyWallet.currency,"wallet:",buyWallet.amount)
-        print(sellWallet.currency,"wallet:",sellWallet.amount)
-        time.sleep(20)
+        trades.append("Sold "+sellSymbol+" at "+str(sellRate)+
+                "; Bought "+buySymbol+" at "+str(price))
+
+        time.sleep(3)
 
 
 while True:
@@ -100,13 +97,19 @@ while True:
             if(price1 < price2) :
                 print(exchange1.ljust(10),":", "%.2e" % price1)
 
-            print("Diff       :", "%.2e" % diff)
+            #print("Diff       :", "%.2e" % diff)
             print("Diff %     :", str("%.3f" % diffp) + "%\n")
 
             if diffp > cutoff and exchanges[exchange1]["value"].currency == arbitrar: # price2 is higher
                 doArbitrage(exchange2, exchange1, arbitrar, key, price1)
+                trades[-1]+="; diff: " + str("%.3f" % diffp) + "%"
                         
             if diffp < -cutoff and exchanges[exchange2]["value"].currency == arbitrar: # price1 is higher
                 doArbitrage(exchange1, exchange2, arbitrar, key, price2)
+                trades[-1]+="; diff: " + str("%.3f" % diffp) + "%"
 
-            time.sleep(3)
+            for trade in trades:
+                print(trade)
+            print()
+
+            time.sleep(2)
