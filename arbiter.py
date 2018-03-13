@@ -11,7 +11,7 @@ gdaxWallets["exchange"] = Gdax()
 gdaxWallets["LTC"] = Wallet("gdax", "LTC", 0)
 gdaxWallets["ETH"] = Wallet("gdax", "ETH", 0)
 gdaxWallets["BCH"] = Wallet("gdax", "BCH", 0)
-gdaxWallets["BTC"] = Wallet("gdax", "BTC", 0.0548)
+gdaxWallets["BTC"] = Wallet("gdax", "BTC", 0.054348)
 gdaxWallets["USD"] = Wallet("gdax", "USD", 0)
 gdaxWallets["value"] = gdaxWallets["BTC"]
 
@@ -46,7 +46,7 @@ last = -0.375
 totalGain = 1
 
 def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
-    global last
+    global last, totalGain
     sellWallet = exchanges[exchange1]["value"]
     buyWallet = exchanges[exchange1][arbitrar]
     sellSymbol = sellWallet.currency + "-" + arbitrar
@@ -67,7 +67,7 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
     trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange1
             +"; Bought "+buySymbol+" at "+str(price)+" on "+exchange2
             +"; diff: " + str("%.3f" % bestDiff) + "%; gain: " + str("%.3f" % realDiff)+"%"
-            +"\n\t\tReal Gain: " + str("%.3f" % realGain) + "%; Total (multiplier): " + str(total))
+            +"\n\t\tReal Gain: " + str("%.3f" % realGain) + "%; Total (multiplier): " + str(totalGain))
             
 
     time.sleep(2)
