@@ -62,12 +62,13 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
 
     realDiff = bestDiff - last
     last = bestDiff
-    realGain = realDiff / 2 - fee
+    realGain = abs(realDiff) / 2 - fee
     totalGain *= 1 + realGain/100
     trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange1
             +"; Bought "+buySymbol+" at "+str(price)+" on "+exchange2
             +"; diff: " + str("%.3f" % bestDiff) + "%; gain: " + str("%.3f" % realDiff)+"%"
-            +"\n\t\tReal Gain: " + str("%.3f" % realGain) + "%; Total (multiplier): " + str(totalGain))
+            +"\n\t\tReal Gain: " + str("%.3f" % realGain) + "%; Total (multiplier): "
+            +str("%.6f" % totalGain))
             
 
     time.sleep(2)
