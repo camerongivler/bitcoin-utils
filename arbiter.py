@@ -72,7 +72,8 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
 #This returns the last trade price of the coin in the exchange.
     
     Exchange.exchange(sellWallet, buyWallet, sellWallet.amount, sellRate)
-#This is where things get hairy for me. Calling the "exchange" function on the "Exchange" class. #Subtracts the sellWallet.amount value from the sellWallet and adds to the buy wallet times 1-fee times sellRate. 
+#This is where things get hairy for me. Calling the "exchange" function on the "Exchange" class. 
+#Subtracts the sellWallet.amount value from the sellWallet and adds to the buy wallet times 1-fee times sellRate. 
 #So I think this converts the USD in an exchange wallet to the coin(?).
     
     exchanges[exchange1]["value"] = buyWallet
