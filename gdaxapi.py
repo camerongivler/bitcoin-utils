@@ -7,7 +7,9 @@ class Gdax(ExchangeBase):
 
     def getLastTradePrice(self, symbol):
         ticker = {}
+        ticker = self.g.get_product_ticker(symbol)
         while not 'price' in ticker.keys():
+            sleep(0.34)
             ticker = self.g.get_product_ticker(symbol)
         return float(ticker['price'])
 
