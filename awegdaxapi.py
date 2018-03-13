@@ -10,6 +10,7 @@ class Gdax(ExchangeBase):
     def request(self, url):
         """Return json data from user specified url extension on gdax"""
         timeout = 5
+        fee = 0.0025
         base_url = "https://www.gdax.com/trade/"
         response = requests.get(base_url + url,
                                timeout=timeout,

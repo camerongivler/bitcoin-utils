@@ -7,6 +7,7 @@ from exchangebase import ExchangeBase
 from hashlib import sha384
 
 class Gemini(ExchangeBase):
+    fee = 0.0025
     def request(url):
         timeout = 5
         base_url = "https://api.gemini.com/v1"

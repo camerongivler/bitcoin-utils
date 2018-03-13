@@ -11,6 +11,7 @@ class Kraken(ExchangeBase):
         """Return json data from kraken
         Important note: kraken URL does not change based on
         what coin is being displayed, no need for user-defined extension(?)"""
+        fee = 0.0026
         timeout = 5
         base_url = "http://api.kraken.com/0/public/ticker"
         response = requests.get(base_url,
