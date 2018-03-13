@@ -37,7 +37,7 @@ exchanges["gdax"] = gdaxWallets
 #exchanges["gemini"] = geminiWallets
 
 arbitrar = "USD"
-cutoff = 1.15 # %
+cutoff = 1.22 # %  - this will guarentee 0.1% per trade
 fee = 0.255 # %
 
 trades=[]
