@@ -85,7 +85,7 @@ while True:
         for exchName, exchange in exchanges.items():
             print(exchName)
             for walletName, wallet in exchange.items():
-                if walletName == "exchange" or walletName == "value": continue
+                if walletName == "exchange" or walletName == "value" or wallet.amount == 0: continue
                 print(walletName,":",wallet.amount)
             print()
 
@@ -129,5 +129,6 @@ while True:
             print(trade)
         print()
 
+        # So we don't get rate limited by exchanges
         time.sleep(2*i)
 
