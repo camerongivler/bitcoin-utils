@@ -50,19 +50,30 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
 #Access the global variables already defined before the function
     
     sellWallet = exchanges[exchange1]["value"]
-#sellWallet - Accesses the wallet of a certain exchange that has money in it. "exchanges" is the dictionary containing all of the exchange wallets (i.e. krakenWallets). [exchange1] is a user-specified parameter and will access that inputted exchange wallet. ["value"] is which wallet had money in it.
+#sellWallet - Accesses the wallet of a certain exchange that has money in it. 
+#"exchanges" is the dictionary containing all of the exchange wallets (i.e. krakenWallets). 
+#[exchange1] is a user-specified parameter and will access that inputted exchange wallet. 
+#["value"] is which wallet had money in it.
     
     buyWallet = exchanges[exchange1][arbitrar]
-#buyWallet - Access the USD wallet of an exchange wallet. "exchanges" is the dictionary containing all of the exchange wallets (i.e. krakenWallets). [exchange1] is a user-specified parameter and will access that inputted exchange wallet. [arbitrar] == "USD" -> accesses the USD wallet of an exchange wallet. If the sellWallet is the USD wallet, then sellWallet == buyWallet(?).
+#buyWallet - Access the USD wallet of an exchange wallet. 
+#"exchanges" is the dictionary containing all of the exchange wallets (i.e. krakenWallets). 
+#[exchange1] is a user-specified parameter and will access that inputted exchange wallet. 
+#[arbitrar] == "USD" -> accesses the USD wallet of an exchange wallet. 
+#If the sellWallet is the USD wallet, then sellWallet == buyWallet(?).
     
     sellSymbol = sellWallet.currency + "-" + arbitrar
-#sellSymbol - Creates a symbol by accessing the "currency" attribute of the Wallet class and adds on "-USD" to it. sellSymbol therefore can be == "USD-USD"(?).
+#sellSymbol - Creates a symbol by accessing the "currency" attribute of the Wallet class
+#Adds on "-USD" to it. sellSymbol therefore can be == "USD-USD"(?).
     
     sellRate = exchanges[exchange1]["exchange"].getLastTradePrice(sellSymbol)
-#sellRate - Accesses the "exchange" class. Calls the "getLastTradePrice" method with the "sellSymbol" parameter. This returns the last trade price of the coin in the exchange.
+#sellRate - Accesses the "exchange" class. 
+#Calls the "getLastTradePrice" method with the "sellSymbol" parameter. 
+#This returns the last trade price of the coin in the exchange.
     
     Exchange.exchange(sellWallet, buyWallet, sellWallet.amount, sellRate)
-#This is where things get hairy for me. Calling the "exchange" function on the "Exchange" class. Subtracts the sellWallet.amount value from the sellWallet and adds to the buy wallet times 1-fee times sellRate. So I think this converts the USD in an exchange wallet to the coin(?).
+#This is where things get hairy for me. Calling the "exchange" function on the "Exchange" class. #Subtracts the sellWallet.amount value from the sellWallet and adds to the buy wallet times 1-fee times sellRate. 
+#So I think this converts the USD in an exchange wallet to the coin(?).
     
     exchanges[exchange1]["value"] = buyWallet
 #Sets value == buyWallet(?).
@@ -71,13 +82,15 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
 #sellWallet variable now changes to become equal to USD wallet of a different exchange.    
     
     buyWallet = exchanges[exchange2][key]
-#buyWallet variable now becomes equal to the wallet specified by the user-inputted parameter [key] of the second exchange. 
+#buyWallet variable now becomes equal to the wallet specified by the user-inputted parameter 
+#[key] of the second exchange. 
 
     buySymbol = key + "-" + arbitrar
 #buySymbol variable equals "[key]-USD"
     
     Exchange.exchange(sellWallet, buyWallet, sellWallet.amount, 1/price, fee/100)
-#The exchange method is now called again. Subtract everything from the sell wallet and add it to the buy wallet. How come now it is 1/price and fee/100?
+#The exchange method is now called again. Subtract everything from the sell wallet 
+#and add it to the buy wallet. How come now it is 1/price and fee/100?
     
     exchanges[exchange2]["value"] = buyWallet
 #Set the value of the [exchange2] wallet == buyWallet
