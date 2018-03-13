@@ -37,11 +37,13 @@ exchanges["gdax"] = gdaxWallets
 #exchanges["gemini"] = geminiWallets
 
 arbitrar = "USD"
-cutoff = 0.75
+cutoff = 0.75 # %
+fee = 0.26 # %
 
 trades=[]
 #First trade loses money, but gets the ball rolling
 last = -0.375
+totalGain = 1
 
 def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
     global last
@@ -55,15 +57,18 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
     sellWallet = exchanges[exchange2][arbitrar]
     buyWallet = exchanges[exchange2][key]
     buySymbol = key + "-" + arbitrar
-    Exchange.exchange(sellWallet, buyWallet, sellWallet.amount, 1/price)
+    Exchange.exchange(sellWallet, buyWallet, sellWallet.amount, 1/price, fee/100)
     exchanges[exchange2]["value"] = buyWallet
 
     realDiff = bestDiff - last
+    last = bestDiff
+    realGain = realDiff / 2 - fee
+    totalGain *= 1 + realGain/100
     trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange1
             +"; Bought "+buySymbol+" at "+str(price)+" on "+exchange2
-            +"; diff: " + str("%.3f" % bestDiff) + "% gain: " + str("%.3f" % realDiff))
-
-    last = bestDiff
+            +"; diff: " + str("%.3f" % bestDiff) + "%; gain: " + str("%.3f" % realDiff)+"%"
+            +"\n\t\tReal Gain: " + str("%.3f" % realGain) + "%; Total (multiplier): " + str(total))
+            
 
     time.sleep(2)
 
