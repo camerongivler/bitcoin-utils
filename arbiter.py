@@ -18,7 +18,7 @@ gdaxWallets["value"] = gdaxWallets["BTC"]
 geminiWallets = {}
 geminiWallets["exchange"] = Gemini()
 geminiWallets["ETH"] = Wallet("gemini", "ETH", 0)
-geminiWallets["BTC"] = Wallet("gemini", "BTC", 0.052212)
+geminiWallets["BTC"] = Wallet("gemini", "BTC", 0)
 geminiWallets["USD"] = Wallet("gemini", "USD", 0)
 geminiWallets["value"] = geminiWallets["BTC"]
 
@@ -44,27 +44,27 @@ trades=[]
 last = -0.375
 
 def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
-        sellWallet = exchanges[exchange1]["value"]
-        buyWallet = exchanges[exchange1][arbitrar]
-        sellSymbol = sellWallet.currency + "-" + arbitrar
-        sellRate = exchanges[exchange1]["exchange"].getLastTradePrice(sellSymbol)
-        Exchange.exchange(sellWallet, buyWallet, sellWallet.amount, sellRate)
-        exchanges[exchange1]["value"] = buyWallet
+    sellWallet = exchanges[exchange1]["value"]
+    buyWallet = exchanges[exchange1][arbitrar]
+    sellSymbol = sellWallet.currency + "-" + arbitrar
+    sellRate = exchanges[exchange1]["exchange"].getLastTradePrice(sellSymbol)
+    Exchange.exchange(sellWallet, buyWallet, sellWallet.amount, sellRate)
+    exchanges[exchange1]["value"] = buyWallet
 
-        sellWallet = exchanges[exchange2][arbitrar]
-        buyWallet = exchanges[exchange2][key]
-        buySymbol = key + "-" + arbitrar
-        Exchange.exchange(sellWallet, buyWallet, sellWallet.amount, 1/price)
-        exchanges[exchange2]["value"] = buyWallet
+    sellWallet = exchanges[exchange2][arbitrar]
+    buyWallet = exchanges[exchange2][key]
+    buySymbol = key + "-" + arbitrar
+    Exchange.exchange(sellWallet, buyWallet, sellWallet.amount, 1/price)
+    exchanges[exchange2]["value"] = buyWallet
 
-        realDiff = bestDiff - last
-        trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange1
-                +"; Bought "+buySymbol+" at "+str(price)+" on "+exchange2
-                +"; diff: " + str("%.3f" % realDiff) + "%")
+    realDiff = bestDiff - last
+    trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange1
+            +"; Bought "+buySymbol+" at "+str(price)+" on "+exchange2
+            +"; diff: " + str("%.3f" % realDiff) + "%")
 
-        last = bestDiff
+    last = bestDiff
 
-        time.sleep(2)
+    time.sleep(2)
 
 while True:
     for combo in combinations(exchanges, 2):  # 2 for pairs, 3 for triplets, etc
