@@ -44,6 +44,7 @@ trades=[]
 last = -0.375
 
 def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
+    global last
     sellWallet = exchanges[exchange1]["value"]
     buyWallet = exchanges[exchange1][arbitrar]
     sellSymbol = sellWallet.currency + "-" + arbitrar
@@ -119,17 +120,20 @@ while True:
             print("Symbol :", symbol)
             print("Diff % :", exchange1 if diff < 0 else exchange2, str("%.3f" % diffp) + "%\n")
 
+        goal = 0
         if arbitrarExchange == 1:
-            print("goal : >" + str("%.3f" % (cutoff+last)) + "%")
+            goal = cutoff + last if cutoff + last > 0 else 0
+            print("goal : >" + str("%.3f" % goal) + "%")
 
         if arbitrarExchange == 2:
-            print("goal : <" + str("%.3f" % (cutoff+last)) + "%")
+            goal = cutoff - last if cutoff - last < 0 else 0
+            print("goal : <" + str("%.3f" % goal) + "%")
         print()
 
-        if bestDiff >= cutoff + last and arbitrarExchange == 1: # price2 is higher
+        if bestDiff >= goal and arbitrarExchange == 1: # price2 is higher
             doArbitrage(exchange2, exchange1, arbitrar, bestKey, bestPrice1, bestDiff)
                     
-        if bestDiff <= last - cutoff and arbitrarExchange == 2: # price1 is higher
+        if bestDiff <= goal and arbitrarExchange == 2: # price1 is higher
             doArbitrage(exchange1, exchange2, arbitrar, bestKey, bestPrice2, bestDiff)
 
         for trade in trades:
