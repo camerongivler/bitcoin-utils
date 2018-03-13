@@ -61,7 +61,7 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
     realDiff = bestDiff - last
     trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange1
             +"; Bought "+buySymbol+" at "+str(price)+" on "+exchange2
-            +"; diff: " + str("%.3f" % realDiff) + "%")
+            +"; diff: " + str("%.3f" % bestDiff) + "% gain: " + str("%.3f" % realDiff))
 
     last = bestDiff
 
@@ -123,11 +123,11 @@ while True:
         print()
         goal = 0
         if arbitrarExchange == 1:
-            goal = cutoff + last if cutoff + last > 0 else 0
+            goal = last + cutoff if last + cutoff > 0 else 0
             print("goal : >" + str("%.3f" % goal) + "%")
 
         if arbitrarExchange == 2:
-            goal = cutoff - last if cutoff - last < 0 else 0
+            goal = last - cutoff if last - cutoff < 0 else 0
             print("goal : <" + str("%.3f" % goal) + "%")
         print()
 
