@@ -11,7 +11,7 @@ gdaxWallets["exchange"] = Gdax()
 gdaxWallets["LTC"] = Wallet("gdax", "LTC", 0)
 gdaxWallets["ETH"] = Wallet("gdax", "ETH", 0)
 gdaxWallets["BCH"] = Wallet("gdax", "BCH", 0)
-gdaxWallets["BTC"] = Wallet("gdax", "BTC", 0.054348)
+gdaxWallets["BTC"] = Wallet("gdax", "BTC", 0.0553973)
 gdaxWallets["USD"] = Wallet("gdax", "USD", 0)
 gdaxWallets["value"] = gdaxWallets["BTC"]
 
