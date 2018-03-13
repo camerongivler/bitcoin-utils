@@ -117,7 +117,8 @@ while True:
                 bestPrice2 = price2
 
             # Print higher first
-            print(symbol,":", exchange1 if diff < 0 else exchange2, str("%.3f" % diffp) + "%")
+            print(symbol,":", (exchange1 if diff < 0 else exchange2).ljust(6),
+                    str("%.3f" % diffp).rjust(6) + "%")
 
         print()
         goal = 0
