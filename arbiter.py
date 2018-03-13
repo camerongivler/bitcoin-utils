@@ -119,6 +119,13 @@ while True:
             print("Symbol :", symbol)
             print("Diff % :", exchange1 if diff < 0 else exchange2, str("%.3f" % diffp) + "%\n")
 
+        if arbitrarExchange == 1:
+            print("goal : >" + str("%.3f" % (cutoff+last)) + "%")
+
+        if arbitrarExchange == 2:
+            print("goal : <" + str("%.3f" % (cutoff+last)) + "%")
+        print()
+
         if bestDiff >= cutoff + last and arbitrarExchange == 1: # price2 is higher
             doArbitrage(exchange2, exchange1, arbitrar, bestKey, bestPrice1, bestDiff)
                     
@@ -127,8 +134,7 @@ while True:
 
         for trade in trades:
             print(trade)
-        print()
-
+        
         # So we don't get rate limited by exchanges
         time.sleep(2*i)
 
