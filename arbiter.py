@@ -117,9 +117,9 @@ while True:
                 bestPrice2 = price2
 
             # Print higher first
-            print("Symbol :", symbol)
-            print("Diff % :", exchange1 if diff < 0 else exchange2, str("%.3f" % diffp) + "%\n")
+            print(symbol,":", exchange1 if diff < 0 else exchange2, str("%.3f" % diffp) + "%")
 
+        print()
         goal = 0
         if arbitrarExchange == 1:
             goal = cutoff + last if cutoff + last > 0 else 0
