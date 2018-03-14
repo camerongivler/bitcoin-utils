@@ -48,7 +48,7 @@ totalGain = 1
 
 def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
 <<<<<<< HEAD
-    global last, totalGain
+
 #Access the global variables already defined before the function
     
 =======
