@@ -11,9 +11,9 @@ gdaxWallets["exchange"] = Gdax()
 gdaxWallets["LTC"] = Wallet("gdax", "LTC", 0)
 gdaxWallets["ETH"] = Wallet("gdax", "ETH", 0)
 gdaxWallets["BCH"] = Wallet("gdax", "BCH", 0)
-gdaxWallets["BTC"] = Wallet("gdax", "BTC", 0.0541765)
-gdaxWallets["USD"] = Wallet("gdax", "USD", 0)
-gdaxWallets["value"] = gdaxWallets["BTC"]
+gdaxWallets["BTC"] = Wallet("gdax", "BTC", 0)
+gdaxWallets["USD"] = Wallet("gdax", "USD", 487.36)
+gdaxWallets["value"] = gdaxWallets["USD"]
 
 geminiWallets = {}
 geminiWallets["exchange"] = Gemini()
@@ -24,12 +24,12 @@ geminiWallets["value"] = geminiWallets["BTC"]
 
 krakenWallets = {}
 krakenWallets["exchange"] = Kraken()
-krakenWallets["LTC"] = Wallet("kraken", "LTC", 0)
+krakenWallets["LTC"] = Wallet("kraken", "LTC", 2.840026170837398)
 krakenWallets["ETH"] = Wallet("kraken", "ETH", 0)
 krakenWallets["BCH"] = Wallet("kraken", "BCH", 0)
 krakenWallets["BTC"] = Wallet("kraken", "BTC", 0)
-krakenWallets["USD"] = Wallet("kraken", "USD", 500)
-krakenWallets["value"] = krakenWallets["USD"]
+krakenWallets["USD"] = Wallet("kraken", "USD", 0)
+krakenWallets["value"] = krakenWallets["LTC"]
 
 exchanges = {}
 exchanges["kraken"] = krakenWallets
@@ -42,7 +42,8 @@ fee = 0.255 # %
 
 trades=[]
 #First trade loses money, but gets the ball rolling
-last = -cutoff/2
+#last = -cutoff/2
+last = 0.408
 totalGain = 1
 
 def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
