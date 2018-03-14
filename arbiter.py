@@ -50,8 +50,6 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
 <<<<<<< HEAD
 
 #Access the global variables already defined before the function
-    
-=======
     global last, totalGain, trades
 >>>>>>> master
     sellWallet = exchanges[exchange1]["value"]
