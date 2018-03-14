@@ -47,11 +47,10 @@ last = 0.408
 totalGain = 1
 
 def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
-<<<<<<< HEAD
 
 #Access the global variables already defined before the function
     global last, totalGain, trades
->>>>>>> master
+
     sellWallet = exchanges[exchange1]["value"]
 #sellWallet - Accesses the wallet of a certain exchange that has money in it. 
 #"exchanges" is the dictionary containing all of the exchange wallets (i.e. krakenWallets). 
@@ -104,19 +103,12 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
     realGain = abs(realDiff) / 2 - 2*fee
     totalGain *= 1 + realGain/100
     localtime = time.asctime( time.localtime(time.time()) )
-    trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange1
+     trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange1
             +"; Bought "+buySymbol+" at "+str(price)+" on "+exchange2
             +"; diff: " + str("%.3f" % bestDiff) + "%; gain: " + str("%.3f" % realDiff)+"%"
-<<<<<<< HEAD
-            +"\n\t\tReal Gain: " + str("%.3f" % realGain) + "%; Total (multiplier): "
-            +str("%.6f" % totalGain))
-#^not sure what that is all about^
-=======
             +"\n\tReal Gain: " + str("%.3f" % realGain) + "%; Total (multiplier): "
             +str("%.6f" % totalGain) + "; time: "+localtime)
-            
->>>>>>> master
-
+      
     time.sleep(2)
 
 while True:
