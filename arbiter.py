@@ -149,7 +149,8 @@ while True:
                 print(trade)
             
         except Exception as e:
-            trades.append("Unexpected error: " + str(e))
+            localtime = time.asctime( time.localtime(time.time()) )
+            trades.append("Unexpected error(" + localtime + "): " + str(e))
             time.sleep(2*i)
 
         # So we don't get rate limited by exchanges
