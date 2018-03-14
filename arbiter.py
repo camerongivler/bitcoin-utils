@@ -6,35 +6,10 @@ from geminiapi import Gemini
 from gdaxapi import Gdax
 from itertools import combinations
 
-gdaxWallets = {}
-gdaxWallets["exchange"] = Gdax()
-gdaxWallets["LTC"] = Wallet("gdax", "LTC", 0)
-gdaxWallets["ETH"] = Wallet("gdax", "ETH", 0)
-gdaxWallets["BCH"] = Wallet("gdax", "BCH", 0)
-gdaxWallets["BTC"] = Wallet("gdax", "BTC", 0)
-gdaxWallets["USD"] = Wallet("gdax", "USD", 487.36)
-gdaxWallets["value"] = gdaxWallets["USD"]
-
-geminiWallets = {}
-geminiWallets["exchange"] = Gemini()
-geminiWallets["ETH"] = Wallet("gemini", "ETH", 0)
-geminiWallets["BTC"] = Wallet("gemini", "BTC", 0)
-geminiWallets["USD"] = Wallet("gemini", "USD", 0)
-geminiWallets["value"] = geminiWallets["BTC"]
-
-krakenWallets = {}
-krakenWallets["exchange"] = Kraken()
-krakenWallets["LTC"] = Wallet("kraken", "LTC", 2.840026170837398)
-krakenWallets["ETH"] = Wallet("kraken", "ETH", 0)
-krakenWallets["BCH"] = Wallet("kraken", "BCH", 0)
-krakenWallets["BTC"] = Wallet("kraken", "BTC", 0)
-krakenWallets["USD"] = Wallet("kraken", "USD", 0)
-krakenWallets["value"] = krakenWallets["LTC"]
-
+#exchanges["gemini"] = geminiWallets
 exchanges = {}
 exchanges["kraken"] = krakenWallets
 exchanges["gdax"] = gdaxWallets
-#exchanges["gemini"] = geminiWallets
 
 arbitrar = "USD"
 cutoff = 1.22 # %  - this will guarentee 0.1% per trade
@@ -51,52 +26,52 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
 #Access the global variables already defined before the function
     global last, totalGain, trades
 
-    sellWallet = exchanges[exchange1]["value"]
 #sellWallet - Accesses the wallet of a certain exchange that has money in it. 
 #"exchanges" is the dictionary containing all of the exchange wallets (i.e. krakenWallets). 
 #[exchange1] is a user-specified parameter and will access that inputted exchange wallet. 
 #["value"] is which wallet had money in it.
-    
-    buyWallet = exchanges[exchange1][arbitrar]
+    sellWallet = exchanges[exchange1]["value"]
+
 #buyWallet - Access the USD wallet of an exchange wallet. 
 #"exchanges" is the dictionary containing all of the exchange wallets (i.e. krakenWallets). 
 #[exchange1] is a user-specified parameter and will access that inputted exchange wallet. 
 #[arbitrar] == "USD" -> accesses the USD wallet of an exchange wallet. 
-#If the sellWallet is the USD wallet, then sellWallet == buyWallet(?).
-    
-    sellSymbol = sellWallet.currency + "-" + arbitrar
+#If the sellWallet is the USD wallet, then sellWallet == buyWallet(?).   
+    buyWallet = exchanges[exchange1][arbitrar]
+
 #sellSymbol - Creates a symbol by accessing the "currency" attribute of the Wallet class
 #Adds on "-USD" to it. sellSymbol therefore can be == "USD-USD"(?).
-    
-    sellRate = exchanges[exchange1]["exchange"].getLastTradePrice(sellSymbol)
+    sellSymbol = sellWallet.currency + "-" + arbitrar
+
 #sellRate - Accesses the "exchange" class. 
 #Calls the "getLastTradePrice" method with the "sellSymbol" parameter. 
-#This returns the last trade price of the coin in the exchange.
-    
-    Exchange.exchange(sellWallet, buyWallet, sellWallet.amount, sellRate)
+#This returns the last trade price of the coin in the exchange.  
+    sellRate = exchanges[exchange1]["exchange"].getLastTradePrice(sellSymbol)
+
 #This is where things get hairy for me. Calling the "exchange" function on the "Exchange" class. 
 #Subtracts the sellWallet.amount value from the sellWallet and adds to the buy wallet times 1-fee times sellRate. 
-#So I think this converts the USD in an exchange wallet to the coin(?).
-    
-    exchanges[exchange1]["value"] = buyWallet
-#Sets value == buyWallet(?).
+#So I think this converts the USD in an exchange wallet to the coin(?).    
+    Exchange.exchange(sellWallet, buyWallet, sellWallet.amount, sellRate)
 
-    sellWallet = exchanges[exchange2][arbitrar]
+#Sets value == buyWallet(?). 
+    exchanges[exchange1]["value"] = buyWallet
+
 #sellWallet variable now changes to become equal to USD wallet of a different exchange.    
-    
-    buyWallet = exchanges[exchange2][key]
+    sellWallet = exchanges[exchange2][arbitrar]
+
 #buyWallet variable now becomes equal to the wallet specified by the user-inputted parameter 
 #[key] of the second exchange. 
+    buyWallet = exchanges[exchange2][key]
 
-    buySymbol = key + "-" + arbitrar
 #buySymbol variable equals "[key]-USD"
-    
-    Exchange.exchange(sellWallet, buyWallet, sellWallet.amount, 1/price, fee/100)
+    buySymbol = key + "-" + arbitrar
+
 #The exchange method is now called again. Subtract everything from the sell wallet 
 #and add it to the buy wallet. How come now it is 1/price and fee/100?
-    
+    Exchange.exchange(sellWallet, buyWallet, sellWallet.amount, 1/price, fee/100)
+
+#Set the value of the [exchange2] wallet == buyWallet 
     exchanges[exchange2]["value"] = buyWallet
-#Set the value of the [exchange2] wallet == buyWallet
 
     realDiff = bestDiff - last
     last = bestDiff
@@ -127,7 +102,6 @@ while True:
             arbitrarExchange += 2
         if arbitrarExchange == 0 or arbitrarExchange == 3:
             continue
-
         i = 0
         try:
             os.system('clear')
@@ -154,7 +128,6 @@ while True:
                 symbol = key + "-" + arbitrar
                 price1 = first.getLastTradePrice(symbol)
                 price2 = second.getLastTradePrice(symbol)
-
                 diff = price2 - price1
                 diffp = diff / (price1  if price1 < price2 else price1) * 100
                 if diffp > bestDiff and arbitrarExchange == 1 or diffp < bestDiff and arbitrarExchange == 2:
