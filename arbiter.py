@@ -11,9 +11,9 @@ gdaxWallets["exchange"] = Gdax()
 gdaxWallets["LTC"] = Wallet("gdax", "LTC", 0)
 gdaxWallets["ETH"] = Wallet("gdax", "ETH", 0)
 gdaxWallets["BCH"] = Wallet("gdax", "BCH", 0)
-gdaxWallets["BTC"] = Wallet("gdax", "BTC", 0.0553973)
-gdaxWallets["USD"] = Wallet("gdax", "USD", 0)
-gdaxWallets["value"] = gdaxWallets["BTC"]
+gdaxWallets["BTC"] = Wallet("gdax", "BTC", 0)
+gdaxWallets["USD"] = Wallet("gdax", "USD", 487.36)
+gdaxWallets["value"] = gdaxWallets["USD"]
 
 geminiWallets = {}
 geminiWallets["exchange"] = Gemini()
@@ -24,12 +24,12 @@ geminiWallets["value"] = geminiWallets["BTC"]
 
 krakenWallets = {}
 krakenWallets["exchange"] = Kraken()
-krakenWallets["LTC"] = Wallet("kraken", "LTC", 0)
+krakenWallets["LTC"] = Wallet("kraken", "LTC", 2.840026170837398)
 krakenWallets["ETH"] = Wallet("kraken", "ETH", 0)
 krakenWallets["BCH"] = Wallet("kraken", "BCH", 0)
 krakenWallets["BTC"] = Wallet("kraken", "BTC", 0)
-krakenWallets["USD"] = Wallet("kraken", "USD", 500)
-krakenWallets["value"] = krakenWallets["USD"]
+krakenWallets["USD"] = Wallet("kraken", "USD", 0)
+krakenWallets["value"] = krakenWallets["LTC"]
 
 exchanges = {}
 exchanges["kraken"] = krakenWallets
@@ -42,13 +42,18 @@ fee = 0.255 # %
 
 trades=[]
 #First trade loses money, but gets the ball rolling
-last = -cutoff/2
+#last = -cutoff/2
+last = 0.408
 totalGain = 1
 
 def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
+<<<<<<< HEAD
     global last, totalGain
 #Access the global variables already defined before the function
     
+=======
+    global last, totalGain, trades
+>>>>>>> master
     sellWallet = exchanges[exchange1]["value"]
 #sellWallet - Accesses the wallet of a certain exchange that has money in it. 
 #"exchanges" is the dictionary containing all of the exchange wallets (i.e. krakenWallets). 
@@ -100,12 +105,19 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
     last = bestDiff
     realGain = abs(realDiff) / 2 - 2*fee
     totalGain *= 1 + realGain/100
+    localtime = time.asctime( time.localtime(time.time()) )
     trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange1
             +"; Bought "+buySymbol+" at "+str(price)+" on "+exchange2
             +"; diff: " + str("%.3f" % bestDiff) + "%; gain: " + str("%.3f" % realDiff)+"%"
+<<<<<<< HEAD
             +"\n\t\tReal Gain: " + str("%.3f" % realGain) + "%; Total (multiplier): "
             +str("%.6f" % totalGain))
 #^not sure what that is all about^
+=======
+            +"\n\tReal Gain: " + str("%.3f" % realGain) + "%; Total (multiplier): "
+            +str("%.6f" % totalGain) + "; time: "+localtime)
+            
+>>>>>>> master
 
     time.sleep(2)
 
@@ -126,64 +138,70 @@ while True:
         if arbitrarExchange == 0 or arbitrarExchange == 3:
             continue
 
-        os.system('clear')
-        for exchName, exchange in exchanges.items():
-            print(exchName)
-            for walletName, wallet in exchange.items():
-                if walletName == "exchange" or walletName == "value" or wallet.amount == 0: continue
-                print(walletName,":",wallet.amount)
+        i = 0
+        try:
+            os.system('clear')
+            for exchName, exchange in exchanges.items():
+                print(exchName)
+                for walletName, wallet in exchange.items():
+                    if walletName == "exchange" or walletName == "value" or wallet.amount == 0: continue
+                    print(walletName,":",wallet.amount)
+                print()
+
+            bestDiff = 0
+            bestKey = ""
+            bestPrice1 = 0
+            bestPrice2 = 0
+            
+            for key in exchanges[exchange1].keys():
+                if key == arbitrar or key == "exchange" or key == "value": continue
+                if not key in exchanges[exchange2].keys(): continue
+                i += 1
+
+                first = exchanges[exchange1]["exchange"]
+                second = exchanges[exchange2]["exchange"]
+
+                symbol = key + "-" + arbitrar
+                price1 = first.getLastTradePrice(symbol)
+                price2 = second.getLastTradePrice(symbol)
+
+                diff = price2 - price1
+                diffp = diff / (price1  if price1 < price2 else price1) * 100
+                if diffp > bestDiff and arbitrarExchange == 1 or diffp < bestDiff and arbitrarExchange == 2:
+                    bestDiff = diffp
+                    bestKey = key
+                    bestPrice1 = price1
+                    bestPrice2 = price2
+
+                # Print higher first
+                print(symbol,":", (exchange1 if diff < 0 else exchange2).ljust(6),
+                        str("%.3f" % diffp).rjust(6) + "%")
+
+            print()
+            goal = 0
+            if arbitrarExchange == 1:
+                goal = last + cutoff if last + cutoff > cutoff/4 else cutoff/4
+                print("goal : >" + str("%.3f" % goal) + "%")
+
+            if arbitrarExchange == 2:
+                goal = last - cutoff if last - cutoff < -cutoff/4 else -cutoff/4
+                print("goal : <" + str("%.3f" % goal) + "%")
             print()
 
-        bestDiff = 0
-        bestKey = ""
-        bestPrice1 = 0
-        bestPrice2 = 0
-        i = 0
-        
-        for key in exchanges[exchange1].keys():
-            if key == arbitrar or key == "exchange" or key == "value": continue
-            if not key in exchanges[exchange2].keys(): continue
-            i += 1
+            if bestDiff >= goal and arbitrarExchange == 1: # price2 is higher
+                doArbitrage(exchange2, exchange1, arbitrar, bestKey, bestPrice1, bestDiff)
+                        
+            if bestDiff <= goal and arbitrarExchange == 2: # price1 is higher
+                doArbitrage(exchange1, exchange2, arbitrar, bestKey, bestPrice2, bestDiff)
 
-            first = exchanges[exchange1]["exchange"]
-            second = exchanges[exchange2]["exchange"]
+            for trade in trades:
+                print(trade)
+            
+        except Exception as e:
+            localtime = time.asctime( time.localtime(time.time()) )
+            trades.append("Unexpected error(" + localtime + "): " + str(e))
+            time.sleep(2*i)
 
-            symbol = key + "-" + arbitrar
-            price1 = first.getLastTradePrice(symbol)
-            price2 = second.getLastTradePrice(symbol)
-
-            diff = price2 - price1
-            diffp = diff / (price1  if price1 < price2 else price1) * 100
-            if diffp > bestDiff and arbitrarExchange == 1 or diffp < bestDiff and arbitrarExchange == 2:
-                bestDiff = diffp
-                bestKey = key
-                bestPrice1 = price1
-                bestPrice2 = price2
-
-            # Print higher first
-            print(symbol,":", (exchange1 if diff < 0 else exchange2).ljust(6),
-                    str("%.3f" % diffp).rjust(6) + "%")
-
-        print()
-        goal = 0
-        if arbitrarExchange == 1:
-            goal = last + cutoff if last + cutoff > 0 else 0
-            print("goal : >" + str("%.3f" % goal) + "%")
-
-        if arbitrarExchange == 2:
-            goal = last - cutoff if last - cutoff < 0 else 0
-            print("goal : <" + str("%.3f" % goal) + "%")
-        print()
-
-        if bestDiff >= goal and arbitrarExchange == 1: # price2 is higher
-            doArbitrage(exchange2, exchange1, arbitrar, bestKey, bestPrice1, bestDiff)
-                    
-        if bestDiff <= goal and arbitrarExchange == 2: # price1 is higher
-            doArbitrage(exchange1, exchange2, arbitrar, bestKey, bestPrice2, bestDiff)
-
-        for trade in trades:
-            print(trade)
-        
         # So we don't get rate limited by exchanges
         time.sleep(2*i)
 
