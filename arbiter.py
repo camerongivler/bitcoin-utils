@@ -131,11 +131,11 @@ while True:
             print()
             goal = 0
             if arbitrarExchange == 1:
-                goal = last + cutoff if last + cutoff > 0 else 0
+                goal = last + cutoff if last + cutoff > cutoff/4 else cutoff/4
                 print("goal : >" + str("%.3f" % goal) + "%")
 
             if arbitrarExchange == 2:
-                goal = last - cutoff if last - cutoff < 0 else 0
+                goal = last - cutoff if last - cutoff < -cutoff/4 else -cutoff/4
                 print("goal : <" + str("%.3f" % goal) + "%")
             print()
 
