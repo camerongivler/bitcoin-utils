@@ -6,6 +6,14 @@ class Kraken(ExchangeBase):
     api = krakenex.API()
     k = KrakenAPI(api)
     fee = 0.0026
+       
+    krakenWallets["exchange"] = Kraken()
+    krakenWallets["LTC"] = Wallet("kraken", "LTC", 2.840026170837398)
+    krakenWallets["ETH"] = Wallet("kraken", "ETH", 0)
+    krakenWallets["BCH"] = Wallet("kraken", "BCH", 0)
+    krakenWallets["BTC"] = Wallet("kraken", "BTC", 0)
+    krakenWallets["USD"] = Wallet("kraken", "USD", 0)
+    krakenWallets["value"] = krakenWallets["LTC"]
     
     def getLastTradePrice(self, symbol):
         mySymbol = symbol.replace("BTC", "XBT").replace("-","")
