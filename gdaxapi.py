@@ -3,17 +3,22 @@ from wallet import Wallet
 import gdax
 
 class Gdax(ExchangeBase):
+    
+    def __init__(self):
+        #set up wallets
+        self.wallets = {}
+        self.wallets["LTC"] = Wallet("gdax", "LTC", 0)
+        self.wallets["ETH"] = Wallet("gdax", "ETH", 0)
+        self.wallets["BCH"] = Wallet("gdax", "BCH", 0)
+        self.wallets["BTC"] = Wallet("gdax", "BTC", 0)
+        self.wallets["USD"] = Wallet("gdax", "USD", 0)
+        self.wallets["value"] = self.wallets["USD"]
+    
     g = gdax.PublicClient()
     fee = 0.0025
 
     #set up wallets
-    self.wallets = {}
-    self.wallets["LTC"] = Wallet("gdax", "LTC", 0)
-    self.wallets["ETH"] = Wallet("gdax", "ETH", 0)
-    self.wallets["BCH"] = Wallet("gdax", "BCH", 0)
-    self.wallets["BTC"] = Wallet("gdax", "BTC", 0)
-    self.wallets["USD"] = Wallet("gdax", "USD", 0)
-    self.wallets["value"] = self.wallets["USD"]
+
     
     def getLastTradePrice(self, symbol):
         ticker = {}

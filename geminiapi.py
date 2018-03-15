@@ -8,14 +8,16 @@ from exchangebase import ExchangeBase
 from hashlib import sha384
 
 class Gemini(ExchangeBase):
-    fee = 0.0025
     
-    #set up wallets
-    self.wallets = {}
-    self.wallets["ETH"] = Wallet("gemini", "ETH", 0)
-    self.wallets["BTC"] = Wallet("gemini", "BTC", 0)
-    self.wallets["USD"] = Wallet("gemini", "USD", 0)
-    self.wallets["value"] = self.wallet["BTC"]
+    def __init__(self):
+        #set up wallets
+        self.wallets = {}
+        self.wallets["ETH"] = Wallet("gemini", "ETH", 0)
+        self.wallets["BTC"] = Wallet("gemini", "BTC", 0)
+        self.wallets["USD"] = Wallet("gemini", "USD", 0)
+        self.wallets["value"] = self.wallet["BTC"]
+    
+    fee = 0.0025
     
     def request(url):
         timeout = 5
