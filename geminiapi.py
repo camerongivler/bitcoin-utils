@@ -7,14 +7,14 @@ from wallet import Wallet
 from exchangebase import ExchangeBase
 from hashlib import sha384
 
+geminiWallets = {}
+geminiWallets["ETH"] = Wallet("gemini", "ETH", 0)
+geminiWallets["BTC"] = Wallet("gemini", "BTC", 0)
+geminiWallets["USD"] = Wallet("gemini", "USD", 0)
+geminiWallets["value"] = geminiWallets["BTC"]
+
 class Gemini(ExchangeBase):
     fee = 0.0025
-    
-    geminiWallets = {}
-    geminiWallets["ETH"] = Wallet("gemini", "ETH", 0)
-    geminiWallets["BTC"] = Wallet("gemini", "BTC", 0)
-    geminiWallets["USD"] = Wallet("gemini", "USD", 0)
-    geminiWallets["value"] = geminiWallets["BTC"]
     
     def request(url):
         timeout = 5

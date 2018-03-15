@@ -8,6 +8,9 @@ from itertools import combinations
 
 #I still have to put this here because I can't put it in ExchangeBase
 #because that's the base class and I can't put it in any of the exchange classes..
+geminiWallets = {}
+krakenWallets = {}
+gdaxWallets = {}
 geminiWallets["exchange"] = Gemini()
 gdaxWallets["exchange"] = Gdax()
 krakenWallets["exchange"] = Kraken()
