@@ -12,10 +12,10 @@ class Kraken(ExchangeBase):
         self.wallets["BCH"] = Wallet("kraken", "BCH", 0)
         self.wallets["BTC"] = Wallet("kraken", "BTC", 0)
         self.wallets["USD"] = Wallet("kraken", "USD", 0)
+        self.fee = 0.0026
         
     api = krakenex.API()
     k = KrakenAPI(api)
-    fee = 0.0026
     
     def getLastTradePrice(self, symbol):
         mySymbol = symbol.replace("BTC", "XBT").replace("-","")
