@@ -7,8 +7,11 @@ from gdaxapi import Gdax
 from itertools import combinations
 
 gemini.wallets["exchange"] = Gemini()
+gemini.wallets["value"] = gemini.wallets["BTC"]
 gdax.wallets["exchange"] = Gdax()
+gdax.wallets["value"] = gdax.wallets["USD"]
 kraken.wallets["exchange"] = Kraken()
+kraken.wallets["value"] = kraken.wallets["LTC"]
 
 #Set up 'exchanges' dictionary to hold all of exchange wallets
 exchanges = {}
