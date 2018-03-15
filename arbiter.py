@@ -35,38 +35,36 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
 
 #sellWallet - Accesses the wallet of a certain exchange that has money in it. 
 #"exchanges" is the dictionary containing all of the exchange wallets (i.e. krakenWallets). 
-#[exchange1] is a user-specified parameter and will access that inputted exchange wallet. 
+#[exchange1] is an inputted parameter and will access that inputted exchange wallet. 
 #["value"] is which wallet had money in it.
     sellWallet = exchanges[exchange1]["value"]
 
 #buyWallet - Access the USD wallet of an exchange wallet. 
 #"exchanges" is the dictionary containing all of the exchange wallets (i.e. krakenWallets). 
-#[exchange1] is a user-specified parameter and will access that inputted exchange wallet. 
+#[exchange1] is an inputted parameter and will access that inputted exchange wallet. 
 #[arbitrar] == "USD" -> accesses the USD wallet of an exchange wallet. 
-#If the sellWallet is the USD wallet, then sellWallet == buyWallet(?).   
+#If the sellWallet is the USD wallet, then sellWallet == buyWallet(is that okay?).   
     buyWallet = exchanges[exchange1][arbitrar]
 
 #sellSymbol - Creates a symbol by accessing the "currency" attribute of the Wallet class
-#Adds on "-USD" to it. sellSymbol therefore can be == "USD-USD"(?).
+#Adds on "-USD" to it. sellSymbol therefore can be == "USD-USD"(is that okay?).
     sellSymbol = sellWallet.currency + "-" + arbitrar
 
 #sellRate - Accesses the "exchange" class. 
-#Calls the "getLastTradePrice" method with the "sellSymbol" parameter. 
-#This returns the last trade price of the coin in the exchange.  
+#Calls the "getLastTradePrice" method with the "sellSymbol" parameter on the inputted exchange class (i.e. Gemini()). 
+#This returns the last trade price of the ["value"] coin in the exchange.
     sellRate = exchanges[exchange1]["exchange"].getLastTradePrice(sellSymbol)
+    
+#Moves the number of coins * value (includes fee) and puts it into the buy wallet
+    Exchange.transact(sellWallet, buyWallet, sellWallet.amount, sellRate)
 
-#This is where things get hairy for me. Calling the "exchange" function on the "Exchange" class. 
-#Subtracts the sellWallet.amount value from the sellWallet and adds to the buy wallet times 1-fee times sellRate. 
-#So I think this converts the USD in an exchange wallet to the coin(?).    
-    Exchange.exchange(sellWallet, buyWallet, sellWallet.amount, sellRate)
-
-#Sets value == buyWallet(?). 
+#Value of number of coins * value stored here
     exchanges[exchange1]["value"] = buyWallet
 
 #sellWallet variable now changes to become equal to USD wallet of a different exchange.    
     sellWallet = exchanges[exchange2][arbitrar]
 
-#buyWallet variable now becomes equal to the wallet specified by the user-inputted parameter 
+#buyWallet variable now becomes equal to the wallet specified by the inputted parameter 
 #[key] of the second exchange. 
     buyWallet = exchanges[exchange2][key]
 
@@ -75,11 +73,12 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
 
 #The exchange method is now called again. Subtract everything from the sell wallet 
 #and add it to the buy wallet. How come now it is 1/price and fee/100?
-    Exchange.exchange(sellWallet, buyWallet, sellWallet.amount, 1/price, fee/100)
+    Exchange.transact(sellWallet, buyWallet, sellWallet.amount, 1/price, fee/100)
 
 #Set the value of the [exchange2] wallet == buyWallet 
     exchanges[exchange2]["value"] = buyWallet
 
+#last = difference between exchanges on last trade
     realDiff = bestDiff - last
     last = bestDiff
     realGain = abs(realDiff) / 2 - 2*fee
