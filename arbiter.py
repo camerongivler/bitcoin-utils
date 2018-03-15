@@ -85,13 +85,14 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
       
     time.sleep(2)
 
-while True:
 #Infinite loop
+while True:
+
+    #makes sure the exchange wallets are not the same  
     for combo in combinations(exchanges, 2):  # 2 for pairs, 3 for triplets, etc
         exchange1 = combo[0]
         exchange2 = combo[1]
         if exchange1 == exchange2: continue
-    #Why do we want exchange1 == exchange2?
             
         # Check to make sure exactly one has USD
         arbitrarExchange = 0
@@ -104,26 +105,41 @@ while True:
         i = 0
         try:
             os.system('clear')
+            
+            #loop through exchange wallets
+            #i.e. exchName == 'kraken', exchange == krakenWallets
             for exchName, exchange in exchanges.items():
                 print(exchName)
+                
+                #loop through coin wallets in each exchange wallet
+                #i.e. walletName == 'LTC', wallet == Wallet object with 'LTC' currency parameter
                 for walletName, wallet in exchange.items():
+                    
+                    #make sure wallet has value and is for one of the coins
                     if walletName == "exchange" or walletName == "value" or wallet.amount == 0: continue
+                    
+                    #Display the amount in that wallet
                     print(walletName,":",wallet.amount)
                 print()
 
+            #define some variables
             bestDiff = 0
             bestKey = ""
             bestPrice1 = 0
             bestPrice2 = 0
             
+            #for each coin wallet in a certain exchange wallet
+            #make sure it is a coin wallet and increase i by 1
             for key in exchanges[exchange1].keys():
                 if key == arbitrar or key == "exchange" or key == "value": continue
                 if not key in exchanges[exchange2].keys(): continue
                 i += 1
-
+                
+                #first and second are equal to two different exchanges
                 first = exchanges[exchange1]["exchange"]
                 second = exchanges[exchange2]["exchange"]
-
+                
+                #get last trade prices for two different exchanges and see the difference 
                 symbol = key + "-" + arbitrar
                 price1 = first.getLastTradePrice(symbol)
                 price2 = second.getLastTradePrice(symbol)
