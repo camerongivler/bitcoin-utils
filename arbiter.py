@@ -6,10 +6,9 @@ from geminiapi import Gemini
 from gdaxapi import Gdax
 from itertools import combinations
 
-#exchanges["gemini"] = geminiWallets
-exchanges = {}
-exchanges["kraken"] = krakenWallets
-exchanges["gdax"] = gdaxWallets
+geminiWallets["exchange"] = Gemini()
+gdaxWallets["exchange"] = Gdax()
+krakenWallets["exchange"] = Kraken()
 
 arbitrar = "USD"
 cutoff = 1.22 # %  - this will guarentee 0.1% per trade
