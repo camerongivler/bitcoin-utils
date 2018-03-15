@@ -10,7 +10,7 @@ class ExchangeBase:
     
     #exchange method that takes money from the sellWallet and adds
     #it to the buy wallet taking out the fee and multiplied by the rate
-    def exchange(sellWallet, buyWallet, amount, rate, fee):
+    def transact(sellWallet, buyWallet, amount, rate, fee):
         if sellWallet.amount < amount: return False
         sellWallet.amount -= amount
         buyWallet.amount += amount * (1-fee) * rate
