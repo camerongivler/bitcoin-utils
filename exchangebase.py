@@ -7,6 +7,12 @@ class ExchangeBase:
     
     #Future wallets go here as we add more exchanges
     
+    #Set up 'exchanges' dictionary to hold all of exchange wallets
+    exchanges = {}
+    exchanges["kraken"] = krakenWallets
+    exchanges["gdax"] = gdaxWallets
+    exchanges["gemini"] = geminiWallets
+    
     # The symbols will be taken in GDAX form (BTC-USD) and converted appropriately
     def getLastTradePrice(self, symbol):
         pass
