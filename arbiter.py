@@ -1,14 +1,22 @@
 #!/usr/bin/env python3
 import os, time
-from wallet import Wallet, Exchange
+from wallet import Wallet
 from krakenapi import Kraken
 from geminiapi import Gemini
 from gdaxapi import Gdax
 from itertools import combinations
 
+#I still have to put this here because I can't put it in ExchangeBase
+#because that's the base class and I can't put it in any of the exchange classes..
 geminiWallets["exchange"] = Gemini()
 gdaxWallets["exchange"] = Gdax()
 krakenWallets["exchange"] = Kraken()
+
+#Set up 'exchanges' dictionary to hold all of exchange wallets
+exchanges = {}
+exchanges["kraken"] = krakenWallets
+exchanges["gdax"] = gdaxWallets
+exchanges["gemini"] = geminiWallets
 
 arbitrar = "USD"
 cutoff = 1.22 # %  - this will guarentee 0.1% per trade
@@ -77,7 +85,7 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
     realGain = abs(realDiff) / 2 - 2*fee
     totalGain *= 1 + realGain/100
     localtime = time.asctime( time.localtime(time.time()) )
-     trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange1
+    trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange1
             +"; Bought "+buySymbol+" at "+str(price)+" on "+exchange2
             +"; diff: " + str("%.3f" % bestDiff) + "%; gain: " + str("%.3f" % realDiff)+"%"
             +"\n\tReal Gain: " + str("%.3f" % realGain) + "%; Total (multiplier): "
