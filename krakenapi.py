@@ -13,6 +13,7 @@ class Kraken(ExchangeBase):
         self.wallets["BTC"] = Wallet("kraken", "BTC", 0)
         self.wallets["USD"] = Wallet("kraken", "USD", 0)
         self.fee = 0.0026
+        self.value = self.wallets["LTC"]
         
     api = krakenex.API()
     k = KrakenAPI(api)

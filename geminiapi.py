@@ -16,6 +16,7 @@ class Gemini(ExchangeBase):
         self.wallets["BTC"] = Wallet("gemini", "BTC", 0)
         self.wallets["USD"] = Wallet("gemini", "USD", 0)
         self.fee = 0.0025
+        self.value = self.wallets["BTC"]
     
     def request(url):
         timeout = 5
