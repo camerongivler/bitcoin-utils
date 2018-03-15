@@ -6,20 +6,15 @@ from geminiapi import Gemini
 from gdaxapi import Gdax
 from itertools import combinations
 
-#I still have to put this here because I can't put it in ExchangeBase
-#because that's the base class and I can't put it in any of the exchange classes..
-geminiWallets = {}
-krakenWallets = {}
-gdaxWallets = {}
-geminiWallets["exchange"] = Gemini()
-gdaxWallets["exchange"] = Gdax()
-krakenWallets["exchange"] = Kraken()
+gemini.wallets["exchange"] = Gemini()
+gdax.wallets["exchange"] = Gdax()
+kraken.wallets["exchange"] = Kraken()
 
 #Set up 'exchanges' dictionary to hold all of exchange wallets
 exchanges = {}
-exchanges["kraken"] = krakenWallets
-exchanges["gdax"] = gdaxWallets
-exchanges["gemini"] = geminiWallets
+exchanges["kraken"] = kraken.wallets
+exchanges["gdax"] = gdax.wallets
+exchanges["gemini"] = gemini.wallets
 
 arbitrar = "USD"
 cutoff = 1.22 # %  - this will guarentee 0.1% per trade
