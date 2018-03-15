@@ -3,12 +3,14 @@ import base64
 import hmac
 import json
 import time
+from wallet import Wallet
 from exchangebase import ExchangeBase
 from hashlib import sha384
 
 class Gemini(ExchangeBase):
     fee = 0.0025
-       
+    
+    geminiWallets = {}
     geminiWallets["ETH"] = Wallet("gemini", "ETH", 0)
     geminiWallets["BTC"] = Wallet("gemini", "BTC", 0)
     geminiWallets["USD"] = Wallet("gemini", "USD", 0)

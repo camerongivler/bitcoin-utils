@@ -8,6 +8,7 @@ class Kraken(ExchangeBase):
     k = KrakenAPI(api)
     fee = 0.0026
        
+    krakenWallets = {}    
     krakenWallets["LTC"] = Wallet("kraken", "LTC", 2.840026170837398)
     krakenWallets["ETH"] = Wallet("kraken", "ETH", 0)
     krakenWallets["BCH"] = Wallet("kraken", "BCH", 0)
