@@ -1,5 +1,6 @@
 from exchangebase import ExchangeBase
 import krakenex
+from wallet import Wallet
 from pykrakenapi import KrakenAPI
 
 class Kraken(ExchangeBase):
@@ -7,7 +8,6 @@ class Kraken(ExchangeBase):
     k = KrakenAPI(api)
     fee = 0.0026
        
-    krakenWallets["exchange"] = Kraken()
     krakenWallets["LTC"] = Wallet("kraken", "LTC", 2.840026170837398)
     krakenWallets["ETH"] = Wallet("kraken", "ETH", 0)
     krakenWallets["BCH"] = Wallet("kraken", "BCH", 0)

@@ -1,11 +1,11 @@
 from exchangebase import ExchangeBase
+from wallet import Wallet
 import gdax
 
 class Gdax(ExchangeBase):
     g = gdax.PublicClient()
     fee = 0.0025
     
-    gdaxWallets["exchange"] = Gdax()
     gdaxWallets["LTC"] = Wallet("gdax", "LTC", 0)
     gdaxWallets["ETH"] = Wallet("gdax", "ETH", 0)
     gdaxWallets["BCH"] = Wallet("gdax", "BCH", 0)
