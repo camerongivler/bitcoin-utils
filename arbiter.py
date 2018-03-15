@@ -97,9 +97,9 @@ while True:
             
         # Check to make sure exactly one has USD
         arbitrarExchange = 0
-        if exchanges[exchange1]["value"].currency == arbitrar:
+        if exchanges[exchange1].value.currency == arbitrar:
             arbitrarExchange = 1
-        if exchanges[exchange2]["value"].currency == arbitrar:
+        if exchanges[exchange2].value.currency == arbitrar:
             arbitrarExchange += 2
         if arbitrarExchange == 0 or arbitrarExchange == 3:
             continue
@@ -117,7 +117,7 @@ while True:
                 for walletName, wallet in exchange.items():
                     
                     #make sure wallet has value and is for one of the coins
-                    if walletName == "exchange" or walletName == "value" or wallet.amount == 0: continue
+                    if walletName == "value" or wallet.amount == 0: continue
                     
                     #Display the amount in that wallet
                     print(walletName,":",wallet.amount)
@@ -132,13 +132,13 @@ while True:
             #for each coin wallet in a certain exchange wallet
             #make sure it is a coin wallet and increase i by 1
             for key in exchanges[exchange1].keys():
-                if key == arbitrar or key == "exchange" or key == "value": continue
+                if key == arbitrar or key == "value": continue
                 if not key in exchanges[exchange2].keys(): continue
                 i += 1
                 
                 #first and second are equal to two different exchanges
-                first = exchanges[exchange1]["exchange"]
-                second = exchanges[exchange2]["exchange"]
+                first = exchanges[exchange1]
+                second = exchanges[exchange2]
                 
                 #get last trade prices for two different exchanges and see the difference 
                 symbol = key + "-" + arbitrar
