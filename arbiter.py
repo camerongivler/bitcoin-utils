@@ -18,8 +18,7 @@ fee = 0.255 # %
 
 trades=[]
 #First trade loses money, but gets the ball rolling
-#last = -cutoff/2
-last = 0.408
+last = -cutoff/2
 totalGain = 1
 
 def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
@@ -89,8 +88,14 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
 #Infinite loop
 while True:
 
+#always print out how much money there is each exchange wallet that has money
+    for exchName in exchanges:
+        print(exchName)
+        #for wallet in exchName.wallets:
+            #print(wallet.amount)
+
     #makes sure the exchange wallets are not the same  
-    for combo in combinations(exchanges, 2):  # 2 for pairs, 3 for triplets, etc
+    for combo in combinations(exchanges, 2): # 2 for pairs, 3 for triplets, etc
         exchange1 = combo[0]
         exchange2 = combo[1]
         if exchange1 == exchange2: continue
