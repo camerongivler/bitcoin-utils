@@ -31,7 +31,7 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
 #"exchanges" is the dictionary containing all of the exchange wallets (i.e. krakenWallets). 
 #[exchange1] is an inputted parameter and will access that inputted exchange wallet. 
 #["value"] is which wallet had money in it.
-    sellWallet = exchanges[exchange1]["value"]
+    sellWallet = exchanges[exchange1].value
 
 #buyWallet - Access the USD wallet of an exchange wallet. 
 #"exchanges" is the dictionary containing all of the exchange wallets (i.e. krakenWallets). 
@@ -47,13 +47,13 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
 #sellRate - Accesses the "exchange" class. 
 #Calls the "getLastTradePrice" method with the "sellSymbol" parameter on the inputted exchange class (i.e. Gemini()). 
 #This returns the last trade price of the ["value"] coin in the exchange.
-    sellRate = exchanges[exchange1]["exchange"].getLastTradePrice(sellSymbol)
+    sellRate = exchanges[exchange1].getLastTradePrice(sellSymbol)
     
 #Moves the number of coins * value (includes fee) and puts it into the buy wallet
     Exchange.transact(sellWallet, buyWallet, sellWallet.amount, sellRate)
 
 #Value of number of coins * value stored here
-    exchanges[exchange1]["value"] = buyWallet
+    exchanges[exchange1].value = buyWallet
 
 #sellWallet variable now changes to become equal to USD wallet of a different exchange.    
     sellWallet = exchanges[exchange2][arbitrar]
@@ -70,7 +70,7 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
     Exchange.transact(sellWallet, buyWallet, sellWallet.amount, 1/price, fee/100)
 
 #Set the value of the [exchange2] wallet == buyWallet 
-    exchanges[exchange2]["value"] = buyWallet
+    exchanges[exchange2].value = buyWallet
 
 #last = difference between exchanges on last trade
     realDiff = bestDiff - last
@@ -117,7 +117,7 @@ while True:
                 for walletName, wallet in exchange.items():
                     
                     #make sure wallet has value and is for one of the coins
-                    if walletName == "value" or wallet.amount == 0: continue
+                    if wallet.amount == 0: continue
                     
                     #Display the amount in that wallet
                     print(walletName,":",wallet.amount)
@@ -132,7 +132,7 @@ while True:
             #for each coin wallet in a certain exchange wallet
             #make sure it is a coin wallet and increase i by 1
             for key in exchanges[exchange1].keys():
-                if key == arbitrar or key == "value": continue
+                if key == arbitrar: continue
                 if not key in exchanges[exchange2].keys(): continue
                 i += 1
                 
