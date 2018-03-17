@@ -6,7 +6,7 @@ from geminiapi import Gemini
 from gdaxapi import Gdax
 from itertools import combinations
 
-#Set up 'exchanges' dictionary to hold all of exchange wallets
+#Set up 'exchanges' dictionary to hold all of the exchanges
 exchanges = {}
 exchanges["kraken"] = Kraken()
 exchanges["gdax"] = Gdax()
@@ -16,7 +16,7 @@ arbitrar = "USD"
 for exchange in exchanges.values():
     exchange.setArbitrar(arbitrar)
 
-cutoff = 0.5 # %  - this will guarentee 0.1% per trade
+cutoff = 1.22 # %  - this will guarentee 0.1% per trade
 
 trades=[]
 #First trade loses money, but gets the ball rolling
@@ -28,43 +28,17 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
     #Access the global variables already defined before the function
     global last, totalGain, trades
 
-    #sellWallet - Accesses the wallet of a certain exchange that has money in it. 
-    #"exchanges" is the dictionary containing all of the exchange wallets (i.e. krakenWallets). 
-    #[exchange1] is an inputted parameter and will access that inputted exchange wallet. 
-    #["value"] is which wallet had money in it.
     sellWallet = exchange1.value
-
-    #buyWallet - Access the USD wallet of an exchange wallet. 
-    #"exchanges" is the dictionary containing all of the exchange wallets (i.e. krakenWallets). 
-    #[exchange1] is an inputted parameter and will access that inputted exchange wallet. 
-    #[arbitrar] == "USD" -> accesses the USD wallet of an exchange wallet. 
-    #If the sellWallet is the USD wallet, then sellWallet == buyWallet(is that okay?).   
     buyWallet = exchange1.arbitrar
-
-    #sellSymbol - Creates a symbol by accessing the "currency" attribute of the Wallet class
-    #Adds on "-USD" to it. sellSymbol therefore can be == "USD-USD"(is that okay?).
     sellSymbol = sellWallet.currency + "-" + arbitrar
-
-    #sellRate - Accesses the "exchange" class. 
-    #Calls the "getLastTradePrice" method with the "sellSymbol" parameter on the inputted exchange class (i.e. Gemini()). 
-    #This returns the last trade price of the ["value"] coin in the exchange.
     sellRate = exchange1.getLastTradePrice(sellSymbol)
     
-    #Moves the number of coins * value (includes fee) and puts it into the buy wallet
     exchange1.transact(sellWallet, buyWallet, sellWallet.amount, sellRate)
 
-    #sellWallet variable now changes to become equal to USD wallet of a different exchange.    
     sellWallet = exchange2.arbitrar
-
-    #buyWallet variable now becomes equal to the wallet specified by the inputted parameter 
-    #[key] of the second exchange. 
     buyWallet = exchange2.wallets[key]
-
-    #buySymbol variable equals "[key]-USD"
     buySymbol = key + "-" + arbitrar
 
-    #The exchange method is now called again. Subtract everything from the sell wallet 
-    #and add it to the buy wallet. How come now it is 1/price and fee/100?
     exchange2.transact(sellWallet, buyWallet, sellWallet.amount, 1/price)
 
     #last = difference between exchanges on last trade
@@ -85,14 +59,13 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
 while True:
     os.system('clear')
 
-    #always print out how much money there is each exchange wallet that has money
+    #always print out how much money there is each wallet that has money
     for exchName,exchange in exchanges.items():
         print(exchName)
         for walletName,wallet in exchange.wallets.items():
             if wallet.amount > 0: print(wallet.currency,":",wallet.amount)
     print()
 
-    #makes sure the exchange wallets are not the same  
     for exchange in combinations(exchanges.values(), 2): # 2 for pairs, 3 for triplets, etc
         # Check to make sure exactly one has USD
         arbitrarExchange = 0
@@ -104,7 +77,6 @@ while True:
             continue
         i = 0
         try:
-            #define some variables
             bestDiff = 0
             bestKey = ""
             bestPrice1 = 0
