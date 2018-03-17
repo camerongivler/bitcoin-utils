@@ -4,19 +4,19 @@ from wallet import Wallet
 from pykrakenapi import KrakenAPI
     
 class Kraken(ExchangeBase):
+    api = krakenex.API()
+    k = KrakenAPI(api)
+
     def __init__(self):
-      #set up the wallets
-        self.wallets = {}
-        self.wallets["LTC"] = Wallet("kraken", "LTC", 2.840026170837398)
+        super().__init__()
+        self.wallets["LTC"] = Wallet("kraken", "LTC", 0)
         self.wallets["ETH"] = Wallet("kraken", "ETH", 0)
         self.wallets["BCH"] = Wallet("kraken", "BCH", 0)
         self.wallets["BTC"] = Wallet("kraken", "BTC", 0)
-        self.wallets["USD"] = Wallet("kraken", "USD", 0)
+        self.wallets["USD"] = Wallet("kraken", "USD", 500)
+        self.value = self.wallets["USD"]
+
         self.fee = 0.0026
-        self.value = self.wallets["LTC"]
-        
-    api = krakenex.API()
-    k = KrakenAPI(api)
     
     def getLastTradePrice(self, symbol):
         mySymbol = symbol.replace("BTC", "XBT").replace("-","")

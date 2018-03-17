@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os, time
+import os, time, sys
 from wallet import Wallet
 from krakenapi import Kraken
 from geminiapi import Gemini
@@ -13,7 +13,10 @@ exchanges["gdax"] = Gdax()
 #exchanges["gemini"] = Gemini()
 
 arbitrar = "USD"
-cutoff = 1.22 # %  - this will guarentee 0.1% per trade
+for exchange in exchanges.values():
+    exchange.setArbitrar(arbitrar)
+
+cutoff = 0.5 # %  - this will guarentee 0.1% per trade
 
 trades=[]
 #First trade loses money, but gets the ball rolling
@@ -29,14 +32,14 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
     #"exchanges" is the dictionary containing all of the exchange wallets (i.e. krakenWallets). 
     #[exchange1] is an inputted parameter and will access that inputted exchange wallet. 
     #["value"] is which wallet had money in it.
-    sellWallet = exchanges[exchange1].value
+    sellWallet = exchange1.value
 
     #buyWallet - Access the USD wallet of an exchange wallet. 
     #"exchanges" is the dictionary containing all of the exchange wallets (i.e. krakenWallets). 
     #[exchange1] is an inputted parameter and will access that inputted exchange wallet. 
     #[arbitrar] == "USD" -> accesses the USD wallet of an exchange wallet. 
     #If the sellWallet is the USD wallet, then sellWallet == buyWallet(is that okay?).   
-    buyWallet = exchanges[exchange1][arbitrar]
+    buyWallet = exchange1.arbitrar
 
     #sellSymbol - Creates a symbol by accessing the "currency" attribute of the Wallet class
     #Adds on "-USD" to it. sellSymbol therefore can be == "USD-USD"(is that okay?).
@@ -45,39 +48,33 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
     #sellRate - Accesses the "exchange" class. 
     #Calls the "getLastTradePrice" method with the "sellSymbol" parameter on the inputted exchange class (i.e. Gemini()). 
     #This returns the last trade price of the ["value"] coin in the exchange.
-    sellRate = exchanges[exchange1].getLastTradePrice(sellSymbol)
+    sellRate = exchange1.getLastTradePrice(sellSymbol)
     
     #Moves the number of coins * value (includes fee) and puts it into the buy wallet
-    Exchange.transact(sellWallet, buyWallet, sellWallet.amount, sellRate)
-
-    #Value of number of coins * value stored here
-    exchanges[exchange1].value = buyWallet
+    exchange1.transact(sellWallet, buyWallet, sellWallet.amount, sellRate)
 
     #sellWallet variable now changes to become equal to USD wallet of a different exchange.    
-    sellWallet = exchanges[exchange2][arbitrar]
+    sellWallet = exchange2.arbitrar
 
     #buyWallet variable now becomes equal to the wallet specified by the inputted parameter 
     #[key] of the second exchange. 
-    buyWallet = exchanges[exchange2][key]
+    buyWallet = exchange2.wallets[key]
 
     #buySymbol variable equals "[key]-USD"
     buySymbol = key + "-" + arbitrar
 
     #The exchange method is now called again. Subtract everything from the sell wallet 
     #and add it to the buy wallet. How come now it is 1/price and fee/100?
-    Exchange.transact(sellWallet, buyWallet, sellWallet.amount, 1/price, fee/100)
-
-    #Set the value of the [exchange2] wallet == buyWallet 
-    exchanges[exchange2].value = buyWallet
+    exchange2.transact(sellWallet, buyWallet, sellWallet.amount, 1/price)
 
     #last = difference between exchanges on last trade
     realDiff = bestDiff - last
     last = bestDiff
-    realGain = abs(realDiff) / 2 - 2*fee
+    realGain = abs(realDiff) / 2 - exchange1.getFee() - exchange2.getFee()
     totalGain *= 1 + realGain/100
     localtime = time.asctime( time.localtime(time.time()) )
-    trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange1
-            +"; Bought "+buySymbol+" at "+str(price)+" on "+exchange2
+    trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange1.getName()
+            +"; Bought "+buySymbol+" at "+str(price)+" on "+exchange2.getName()
             +"; diff: " + str("%.3f" % bestDiff) + "%; gain: " + str("%.3f" % realDiff)+"%"
             +"\n\tReal Gain: " + str("%.3f" % realGain) + "%; Total (multiplier): "
             +str("%.6f" % totalGain) + "; time: "+localtime)
@@ -86,47 +83,27 @@ def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
 
 #Infinite loop
 while True:
+    os.system('clear')
 
     #always print out how much money there is each exchange wallet that has money
     for exchName,exchange in exchanges.items():
         print(exchName)
         for walletName,wallet in exchange.wallets.items():
             if wallet.amount > 0: print(wallet.currency,":",wallet.amount)
+    print()
 
     #makes sure the exchange wallets are not the same  
-    for combo in combinations(exchanges, 2): # 2 for pairs, 3 for triplets, etc
-        exchange1 = combo[0]
-        exchange2 = combo[1]
-        if exchange1 == exchange2: continue
-            
+    for exchange in combinations(exchanges.values(), 2): # 2 for pairs, 3 for triplets, etc
         # Check to make sure exactly one has USD
         arbitrarExchange = 0
-        if exchanges[exchange1].value.currency == arbitrar:
+        if exchange[0].value.currency == arbitrar:
             arbitrarExchange = 1
-        if exchanges[exchange2].value.currency == arbitrar:
+        if exchange[1].value.currency == arbitrar:
             arbitrarExchange += 2
         if arbitrarExchange == 0 or arbitrarExchange == 3:
             continue
         i = 0
         try:
-            os.system('clear')
-            
-            #loop through exchange wallets
-            #i.e. exchName == 'kraken', exchange == krakenWallets
-            for exchName, exchange in exchanges.items():
-                print(exchName)
-                
-                #loop through coin wallets in each exchange wallet
-                #i.e. walletName == 'LTC', wallet == Wallet object with 'LTC' currency parameter
-                for walletName, wallet in exchange.items():
-                    
-                    #make sure wallet has value and is for one of the coins
-                    if wallet.amount == 0: continue
-                    
-                    #Display the amount in that wallet
-                    print(walletName,":",wallet.amount)
-                print()
-
             #define some variables
             bestDiff = 0
             bestKey = ""
@@ -135,19 +112,15 @@ while True:
             
             #for each coin wallet in a certain exchange wallet
             #make sure it is a coin wallet and increase i by 1
-            for key in exchanges[exchange1].keys():
+            for key in exchange[0].wallets.keys():
                 if key == arbitrar: continue
-                if not key in exchanges[exchange2].keys(): continue
+                if not key in exchange[1].wallets.keys(): continue
                 i += 1
-                
-                #first and second are equal to two different exchanges
-                first = exchanges[exchange1]
-                second = exchanges[exchange2]
                 
                 #get last trade prices for two different exchanges and see the difference 
                 symbol = key + "-" + arbitrar
-                price1 = first.getLastTradePrice(symbol)
-                price2 = second.getLastTradePrice(symbol)
+                price1 = exchange[0].getLastTradePrice(symbol)
+                price2 = exchange[1].getLastTradePrice(symbol)
                 diff = price2 - price1
                 diffp = diff / (price1  if price1 < price2 else price1) * 100
                 if diffp > bestDiff and arbitrarExchange == 1 or diffp < bestDiff and arbitrarExchange == 2:
@@ -157,7 +130,7 @@ while True:
                     bestPrice2 = price2
 
                 # Print higher first
-                print(symbol,":", (exchange1 if diff < 0 else exchange2).ljust(6),
+                print(symbol,":", (exchange[0].getName() if diff < 0 else exchange[1].getName()).ljust(6),
                         str("%.3f" % diffp).rjust(6) + "%")
 
             print()
@@ -172,17 +145,21 @@ while True:
             print()
 
             if bestDiff >= goal and arbitrarExchange == 1: # price2 is higher
-                doArbitrage(exchange2, exchange1, arbitrar, bestKey, bestPrice1, bestDiff)
+                doArbitrage(exchange[1], exchange[0], arbitrar, bestKey, bestPrice1, bestDiff)
                         
             if bestDiff <= goal and arbitrarExchange == 2: # price1 is higher
-                doArbitrage(exchange1, exchange2, arbitrar, bestKey, bestPrice2, bestDiff)
+                doArbitrage(exchange[0], exchange[1], arbitrar, bestKey, bestPrice2, bestDiff)
 
             for trade in trades:
                 print(trade)
             
         except Exception as e:
-            localtime = time.asctime( time.localtime(time.time()) )
-            trades.append("Unexpected error(" + localtime + "): " + str(e))
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            localtime = time.asctime(time.localtime(time.time()))
+            trades.append("Unexpected "+exc_type.__name__+
+                    " at "+fname +":"+str(exc_tb.tb_lineno)+
+                    " on "+localtime+": \"" + str(e) + "\"")
             time.sleep(2*i)
 
         # So we don't get rate limited by exchanges
