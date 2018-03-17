@@ -7,11 +7,11 @@ class Gdax(ExchangeBase):
 
     def __init__(self):
         super().__init__()
-        self.wallets["LTC"] = Wallet("gdax", "LTC", 0)
-        self.wallets["ETH"] = Wallet("gdax", "ETH", 0)
-        self.wallets["BCH"] = Wallet("gdax", "BCH", 0)
-        self.wallets["BTC"] = Wallet("gdax", "BTC", 0.063267)
-        self.wallets["USD"] = Wallet("gdax", "USD", 0)
+        self.wallets["LTC"] = Wallet("LTC", 0)
+        self.wallets["ETH"] = Wallet("ETH", 0)
+        self.wallets["BCH"] = Wallet("BCH", 0)
+        self.wallets["BTC"] = Wallet("BTC", 0.063267)
+        self.wallets["USD"] = Wallet("USD", 0)
 
         self.fee = 0.0025
 

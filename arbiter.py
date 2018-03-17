@@ -22,6 +22,7 @@ trades=[]
 #First trade loses money, but gets the ball rolling
 last = -cutoff/2
 totalGain = 1
+runningAverage = 0 #keep track of the running average over the past hour
 
 def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
 
@@ -95,6 +96,8 @@ while True:
                 price2 = exchange[1].getLastTradePrice(symbol)
                 diff = price2 - price1
                 diffp = diff / (price1  if price1 < price2 else price1) * 100
+                # About 3600 price checks every 2 hours
+                runningAverage = runningAverage * 3599/ 3600 + diffp/3600
                 if diffp > bestDiff and arbitrarExchange == 1 or diffp < bestDiff and arbitrarExchange == 2:
                     bestDiff = diffp
                     bestKey = key
@@ -106,13 +109,16 @@ while True:
                         str("%.3f" % diffp).rjust(6) + "%")
 
             print()
+            print("runningAverage: " + str("%.3f" % runningAverage) + "%")
             goal = 0
             if arbitrarExchange == 1:
-                goal = last + cutoff if last + cutoff > cutoff/4 else cutoff/4
+                minimum = runningAverage + cutoff/4
+                goal = last + cutoff if last + cutoff > minimum else minimum
                 print("goal : >" + str("%.3f" % goal) + "%")
 
             if arbitrarExchange == 2:
-                goal = last - cutoff if last - cutoff < -cutoff/4 else -cutoff/4
+                maximum = runningAverage - cutoff/4
+                goal = last - cutoff if last - cutoff < maximum else maximum
                 print("goal : <" + str("%.3f" % goal) + "%")
             print()
 

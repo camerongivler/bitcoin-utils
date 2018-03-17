@@ -5,8 +5,8 @@ class ExchangeBase:
     def __init__(self):
         self.wallets = {}
         self.fee = 0
-        self.value = Wallet("null","null",0)
-        self.arbitrar = Wallet("null","null",0)
+        self.value = Wallet("null",0)
+        self.arbitrar = Wallet("null",0)
     
     # The symbols will be taken in GDAX form (BTC-USD) and converted appropriately
     def getLastTradePrice(self, symbol):
