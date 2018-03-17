@@ -11,7 +11,7 @@ class Gdax(ExchangeBase):
         self.wallets["ETH"] = Wallet("gdax", "ETH", 0)
         self.wallets["BCH"] = Wallet("gdax", "BCH", 0)
         self.wallets["BTC"] = Wallet("gdax", "BTC", 0)
-        self.wallets["USD"] = Wallet("gdax", "USD", 0)
+        self.wallets["USD"] = Wallet("gdax", "USD", 500)
         self.fee = 0.0025
         self.value = self.wallets["USD"]
  

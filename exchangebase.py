@@ -1,4 +1,5 @@
 class ExchangeBase:
+    wallets = {}
     
     # The symbols will be taken in GDAX form (BTC-USD) and converted appropriately
     def getLastTradePrice(self, symbol):
