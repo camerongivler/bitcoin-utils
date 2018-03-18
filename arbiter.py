@@ -23,7 +23,7 @@ for exchange in exchanges.values():
 
 cutoff = 1.22 # %  - this will guarentee 0.1% per trade
 #cutoff = 0.1 # for testing
-runningAverage = 0.25 #keep track of the running average over the past ~2 hours
+runningAverage = 0.2 #keep track of the running average over the past ~2 hours
 
 trades=[]
 #First trade loses money, but gets the ball rolling
