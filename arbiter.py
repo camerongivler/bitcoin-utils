@@ -112,7 +112,8 @@ while True:
             trades.append("Unexpected "+exc_type.__name__+
                     " at "+fname +":"+str(exc_tb.tb_lineno)+
                     " on "+localtime+": \"" + str(e) + "\"")
-            time.sleep(2*i)
+            print(trades[-1])
+            time.sleep(2*i if i > 0 else 2)
 
         # So we don't get rate limited by exchanges
         time.sleep(2*i)
