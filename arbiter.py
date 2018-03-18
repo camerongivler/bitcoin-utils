@@ -97,10 +97,10 @@ while True:
             print()
 
             if bestDiff >= goal and arbitrarExchange == 1: # price2 is higher
-                last, totalgain = exchange.doArbitrage(1, bestKey, bestDiff, last, totalGain, trades)
+                last, totalGain = exchange.doArbitrage(1, bestKey, bestDiff, last, totalGain, trades)
 
             if bestDiff <= goal and arbitrarExchange == 2: # price1 is higher
-                last, totalgain = exchange.doArbitrage(0, bestKey, bestDiff, last, totalGain, trades)
+                last, totalGain = exchange.doArbitrage(0, bestKey, bestDiff, last, totalGain, trades)
 
             for trade in trades:
                 print(trade)
