@@ -23,30 +23,28 @@ class ExchangePair:
         exchange1 = self[seller]
         exchange2 = self[not seller]
 
-        sellWallet = exchange1.value
+        sellWallet = exchange1.valueWallet
         buyWallet = exchange1.arbitrar
-        wallet1value = buyWallet.amount * (1-exchange1.getFee())
         sellSymbol = sellWallet.currency + "-" + buyWallet.currency
         sellRate = exchange1.getLastTradePrice(sellSymbol)
         
-        exchange1.transact(sellWallet, buyWallet, sellWallet.amount, sellRate)
+        exchange1.transact(sellWallet, buyWallet, sellRate)
 
         sellWallet = exchange2.arbitrar
         buyWallet = exchange2.wallets[key]
-        wallet2value = sellWallet.amount * (1-exchange2.getFee())
         buySymbol = key + "-" + sellWallet.currency
         buyRate = exchange2.getLastTradePrice(buySymbol)
 
         # 1/buyrate because many exchanges don't accept USD-BTC
-        exchange2.transact(sellWallet, buyWallet, sellWallet.amount, 1/buyRate)
+        exchange2.transact(sellWallet, buyWallet, 1/buyRate)
 
-        totalValue = wallet1value + wallet2value
+        totalValue = exchange1.getValue() + exchange2.getValue()
         #last = difference between exchanges on last trade
         realDiff = bestDiff - last
 
         # calculate more accurate fees based on how much money is in each exchange
-        exchange1fee = 2 * exchange1.getFee() * wallet1value / totalValue
-        exchange2fee = 2 * exchange2.getFee() * wallet2value / totalValue
+        exchange1fee = 2 * exchange1.getFee() * exchange1.getValue() / totalValue
+        exchange2fee = 2 * exchange2.getFee() * exchange2.getValue() / totalValue
         realGain = abs(realDiff) / 2 - exchange1fee - exchange2fee
         totalGain *= 1 + realGain/100
         localtime = time.asctime( time.localtime(time.time()) )

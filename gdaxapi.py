@@ -12,10 +12,9 @@ class Gdax(ExchangeBase):
         self.wallets["BCH"] = Wallet("BCH", 0)
         self.wallets["BTC"] = Wallet("BTC", 0.063267)
         self.wallets["USD"] = Wallet("USD", 0)
+        self.valueWallet = self.wallets["BTC"]
 
         self.fee = 0.0025
-
-        self.value = self.wallets["BTC"]
 
     def getLastTradePrice(self, symbol):
         ticker = {}

@@ -14,7 +14,7 @@ class Kraken(ExchangeBase):
         self.wallets["BCH"] = Wallet("BCH", 0)
         self.wallets["BTC"] = Wallet("BTC", 0)
         self.wallets["USD"] = Wallet("USD", 500)
-        self.value = self.wallets["USD"]
+        self.valueWallet = self.wallets["USD"]
 
         self.fee = 0.0026
     

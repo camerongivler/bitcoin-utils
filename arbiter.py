@@ -22,7 +22,8 @@ for exchange in exchanges.values():
     exchange.setArbitrar(arbitrar)
 
 cutoff = 1.22 # %  - this will guarentee 0.1% per trade
-runningAverage = 0.22 #keep track of the running average over the past ~2 hours
+#cutoff = 0 # for testing
+runningAverage = 0.25 #keep track of the running average over the past ~2 hours
 
 trades=[]
 #First trade loses money, but gets the ball rolling
@@ -43,9 +44,9 @@ while True:
     for exchange in exchangePairs: # 2 for pairs, 3 for triplets, etc
         # Check to make sure exactly one has USD
         arbitrarExchange = 0
-        if exchange[0].value.currency == arbitrar:
+        if exchange[0].valueWallet.currency == arbitrar:
             arbitrarExchange = 1
-        if exchange[1].value.currency == arbitrar:
+        if exchange[1].valueWallet.currency == arbitrar:
             arbitrarExchange += 2
         if arbitrarExchange == 0 or arbitrarExchange == 3:
             continue
