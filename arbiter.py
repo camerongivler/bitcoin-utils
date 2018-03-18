@@ -116,5 +116,5 @@ while True:
             time.sleep(2*i if i > 0 else 2)
 
         # So we don't get rate limited by exchanges
-        time.sleep(2*i)
+        time.sleep(2*i if i > 0 else 2)
 
