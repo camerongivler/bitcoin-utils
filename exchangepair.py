@@ -56,3 +56,4 @@ class ExchangePair:
                 +"\n\t\tTotal Value of portfolio: "+str(totalValue))
 
         time.sleep(4)
+        return bestDiff, totalGain

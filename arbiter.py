@@ -22,7 +22,7 @@ for exchange in exchanges.values():
     exchange.setArbitrar(arbitrar)
 
 cutoff = 1.22 # %  - this will guarentee 0.1% per trade
-#cutoff = 0 # for testing
+#cutoff = 0.1 # for testing
 runningAverage = 0.25 #keep track of the running average over the past ~2 hours
 
 trades=[]
@@ -52,7 +52,7 @@ while True:
             continue
         i = 0
         try:
-            bestDiff = 0
+            bestDiff = runningAverage
             bestKey = ""
             bestPrice1 = 0
             bestPrice2 = 0
@@ -97,10 +97,10 @@ while True:
             print()
 
             if bestDiff >= goal and arbitrarExchange == 1: # price2 is higher
-                exchange.doArbitrage(1, bestKey, bestDiff, last, totalGain, trades)
+                last, totalgain = exchange.doArbitrage(1, bestKey, bestDiff, last, totalGain, trades)
 
             if bestDiff <= goal and arbitrarExchange == 2: # price1 is higher
-                exchange.doArbitrage(0, bestKey, bestDiff, last, totalGain, trades)
+                last, totalgain = exchange.doArbitrage(0, bestKey, bestDiff, last, totalGain, trades)
 
             for trade in trades:
                 print(trade)
