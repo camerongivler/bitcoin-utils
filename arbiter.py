@@ -38,7 +38,7 @@ while True:
     for exchName,exchange in exchanges.items():
         print(exchName)
         for walletName,wallet in exchange.wallets.items():
-            if wallet.amount > 0: print(wallet.currency,":",wallet.amount)
+            if wallet.amount > 0: print(wallet.currency,":",round(wallet.amount,5))
     print()
 
     for exchange in exchangePairs: # 2 for pairs, 3 for triplets, etc
