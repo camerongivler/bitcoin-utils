@@ -18,12 +18,15 @@ for exchange in combinations(exchanges.values(), 2): # 2 for pairs, 3 for triple
     exchangePairs.append(ExchangePair(exchange[0], exchange[1]))
 
 arbitrar = "USD"
+lastKey = ""
 for exchange in exchanges.values():
     exchange.setArbitrar(arbitrar)
+    if exchange.valueWallet.currency != arbitrar:
+        lastKey = exchange.valueWallet.currency
 
 cutoff = 1.22 # %  - this will guarentee 0.1% per trade
-#cutoff = 0.1 # for testing
-runningAverage = 0.2 #keep track of the running average over the past ~2 hours
+#cutoff = 0 # for testing
+runningAverage = 0.1 #keep track of the running average over the past ~2 hours
 
 trades=[]
 #First trade loses money, but gets the ball rolling
@@ -50,40 +53,15 @@ while True:
             arbitrarExchange += 2
         if arbitrarExchange == 0 or arbitrarExchange == 3:
             continue
-        i = 0
+        i = 1
         try:
-            bestDiff = runningAverage
-            bestKey = ""
-            bestPrice1 = 0
-            bestPrice2 = 0
-            
-            #for each coin wallet in a certain exchange wallet
-            #make sure it is a coin wallet and increase i by 1
-            for key in exchange[0].wallets.keys():
-                if key == arbitrar: continue
-                if not key in exchange[1].wallets.keys(): continue
-                i += 1
-                
-                #get last trade prices for two different exchanges and see the difference 
-                symbol = key + "-" + arbitrar
-                price1 = exchange[0].getLastTradePrice(symbol)
-                price2 = exchange[1].getLastTradePrice(symbol)
-                diff = price2 - price1
-                diffp = diff / (price1  if price1 < price2 else price1) * 100
-                # About 3600 price checks every 2 hours
-                runningAverage = runningAverage * 3599/ 3600 + diffp/3600
-                if diffp > bestDiff and arbitrarExchange == 1 or diffp < bestDiff and arbitrarExchange == 2:
-                    bestDiff = diffp
-                    bestKey = key
-                    bestPrice1 = price1
-                    bestPrice2 = price2
+            diffp, price = exchange.getDiff(lastKey, 0)
 
-                # Print higher first
-                print(symbol,":", (exchange[0].getName() if diff < 0 else exchange[1].getName()).ljust(6),
-                        str("%.3f" % diffp).rjust(6) + "%")
-
+            # About 3600 price checks every 2 hours
+            runningAverage = runningAverage * 3599/ 3600 + diffp/3600
             print()
             print("runningAverage: " + str("%.3f" % runningAverage) + "%")
+
             goal = 0
             if arbitrarExchange == 1:
                 minimum = runningAverage + cutoff/4
@@ -96,11 +74,47 @@ while True:
                 print("goal : <" + str("%.3f" % goal) + "%")
             print()
 
-            if bestDiff >= goal and arbitrarExchange == 1: # price2 is higher
-                last, totalGain = exchange.doArbitrage(1, bestKey, bestDiff, last, totalGain, trades)
+            if diffp >= goal and arbitrarExchange == 1: # price2 is higher
+                sellSymbol, sellRate = exchange[1].sell()
+                buySymbol, buyRate, lastKey, runningAverage = exchange.buy(0, runningAverage)
 
-            if bestDiff <= goal and arbitrarExchange == 2: # price1 is higher
-                last, totalGain = exchange.doArbitrage(0, bestKey, bestDiff, last, totalGain, trades)
+                totalValue = exchange[0].getValue() + exchange[1].getValue()
+                #last = difference between exchanges on last trade
+                realDiff = diffp - last
+                exchange1fee = 2 * exchange[0].getFee() * exchange[0].getValue() / totalValue
+                exchange2fee = 2 * exchange[1].getFee() * exchange[1].getValue() / totalValue
+                realGain = abs(realDiff) / 2 - exchange1fee - exchange2fee
+                totalGain *= 1 + realGain/100
+                last = diffp
+                localtime = time.asctime( time.localtime(time.time()) )
+
+                trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange[1].getName()
+                        +"; Bought "+buySymbol+" at "+str(buyRate)+" on "+exchange[0].getName()
+                        +"; diff: " + str("%.3f" % diffp) + "%; gain: " + str("%.3f" % realDiff)+"%"
+                        +"\n\tReal Gain: " + str("%.3f" % realGain) + "%; Total (multiplier): "
+                        +str("%.6f" % totalGain) + "; time: "+localtime
+                        +"\n\t\tTotal Value of portfolio: "+str(totalValue))
+
+            if diffp <= goal and arbitrarExchange == 2: # price1 is higher
+                sellSymbol, sellRate = exchange[0].sell()
+                buySymbol, buyRate, lastKey, runningAverage = exchange.buy(1, runningAverage)
+
+                totalValue = exchange[0].getValue() + exchange[1].getValue()
+                #last = difference between exchanges on last trade
+                realDiff = diffp - last
+                exchange1fee = 2 * exchange[0].getFee() * exchange[0].getValue() / totalValue
+                exchange2fee = 2 * exchange[1].getFee() * exchange[1].getValue() / totalValue
+                realGain = abs(realDiff) / 2 - exchange1fee - exchange2fee
+                totalGain *= 1 + realGain/100
+                last = diffp
+                localtime = time.asctime( time.localtime(time.time()) )
+
+                trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange[0].getName()
+                        +"; Bought "+buySymbol+" at "+str(buyRate)+" on "+exchange[1].getName()
+                        +"; diff: " + str("%.3f" % diffp) + "%; gain: " + str("%.3f" % realDiff)+"%"
+                        +"\n\tReal Gain: " + str("%.3f" % realGain) + "%; Total (multiplier): "
+                        +str("%.6f" % totalGain) + "; time: "+localtime
+                        +"\n\t\tTotal Value of portfolio: "+str(totalValue))
 
             for trade in trades:
                 print(trade)
