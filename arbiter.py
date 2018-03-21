@@ -24,9 +24,9 @@ for exchange in exchanges.values():
     if exchange.valueWallet.currency != arbitrar:
         lastKey = exchange.valueWallet.currency
 
-cutoff = 1.22 # %  - this will guarentee 0.1% per trade
+cutoff = 1.42 # %  - this will guarentee 0.2% per trade
 #cutoff = 0 # for testing
-runningAverage = 0.2 #keep track of the running average over the past ~2 hours
+runningAverage = 0.1 #keep track of the running average over the past ~2 hours
 
 trades=[]
 #First trade loses money, but gets the ball rolling
@@ -75,42 +75,26 @@ while True:
             print()
 
             if diffp >= goal and arbitrarExchange == 1: # price2 is higher
-                sellSymbol, sellRate = exchange[1].sell()
+                    or diffp <= goal and arbitrarExchange == 2: # price1 is higher
+
+                sellExchange = 1 if arbitrarExchange == 1 else 0
+                buyExchange = 0 if arbitrarExchange == 1 else 1
+
+                sellSymbol, sellRate = exchange[sellExchange].sell()
                 buySymbol, buyRate, lastKey, runningAverage = exchange.buy(0, runningAverage)
 
-                totalValue = exchange[0].getValue() + exchange[1].getValue()
+                totalValue = exchange[buyExchange].getValue() + exchange[sellExchange].getValue()
                 #last = difference between exchanges on last trade
                 realDiff = diffp - last
-                exchange1fee = 2 * exchange[0].getFee() * exchange[0].getValue() / totalValue
-                exchange2fee = 2 * exchange[1].getFee() * exchange[1].getValue() / totalValue
+                exchange1fee = 2 * exchange[buyExchange].getFee() * exchange[buyExchange].getValue() / totalValue
+                exchange2fee = 2 * exchange[sellExchange].getFee() * exchange[sellExchange].getValue() / totalValue
                 realGain = abs(realDiff) / 2 - exchange1fee - exchange2fee
                 totalGain *= 1 + realGain/100
                 last = diffp
                 localtime = time.asctime( time.localtime(time.time()) )
 
-                trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange[1].getName()
-                        +"; Bought "+buySymbol+" at "+str(buyRate)+" on "+exchange[0].getName()
-                        +"; diff: " + str("%.3f" % diffp) + "%; gain: " + str("%.3f" % realDiff)+"%"
-                        +"\n\tReal Gain: " + str("%.3f" % realGain) + "%; Total (multiplier): "
-                        +str("%.6f" % totalGain) + "; time: "+localtime
-                        +"\n\t\tTotal Value of portfolio: "+str(totalValue))
-
-            if diffp <= goal and arbitrarExchange == 2: # price1 is higher
-                sellSymbol, sellRate = exchange[0].sell()
-                buySymbol, buyRate, lastKey, runningAverage = exchange.buy(1, runningAverage)
-
-                totalValue = exchange[0].getValue() + exchange[1].getValue()
-                #last = difference between exchanges on last trade
-                realDiff = diffp - last
-                exchange1fee = 2 * exchange[0].getFee() * exchange[0].getValue() / totalValue
-                exchange2fee = 2 * exchange[1].getFee() * exchange[1].getValue() / totalValue
-                realGain = abs(realDiff) / 2 - exchange1fee - exchange2fee
-                totalGain *= 1 + realGain/100
-                last = diffp
-                localtime = time.asctime( time.localtime(time.time()) )
-
-                trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange[0].getName()
-                        +"; Bought "+buySymbol+" at "+str(buyRate)+" on "+exchange[1].getName()
+                trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange[sellExchange].getName()
+                        +"; Bought "+buySymbol+" at "+str(buyRate)+" on "+exchange[buyExchange].getName()
                         +"; diff: " + str("%.3f" % diffp) + "%; gain: " + str("%.3f" % realDiff)+"%"
                         +"\n\tReal Gain: " + str("%.3f" % realGain) + "%; Total (multiplier): "
                         +str("%.6f" % totalGain) + "; time: "+localtime
