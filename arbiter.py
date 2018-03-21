@@ -64,12 +64,12 @@ while True:
 
             goal = 0
             if arbitrarExchange == 1:
-                minimum = runningAverage + cutoff/4
+                minimum = runningAverage + cutoff/3
                 goal = last + cutoff if last + cutoff > minimum else minimum
                 print("goal : >" + str("%.3f" % goal) + "%")
 
             if arbitrarExchange == 2:
-                maximum = runningAverage - cutoff/4
+                maximum = runningAverage - cutoff/3
                 goal = last - cutoff if last - cutoff < maximum else maximum
                 print("goal : <" + str("%.3f" % goal) + "%")
             print()
