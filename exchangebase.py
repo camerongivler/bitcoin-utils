@@ -39,8 +39,10 @@ class ExchangeBase:
         return sellSymbol, rate
 
     def buy(self, key):
+        buySymbol = key + "-" + self.arbitrar.currency
         rate = self.getLastTradePrice(key + "-" + self.arbitrar.currency)
         self.transact(self.arbitrar, self.wallets[key], 1/rate)
+        return buySymbol, rate
 
     #exchange method that takes money from the sellWallet and adds
     #it to the buy wallet taking out the fee and multiplied by the rate

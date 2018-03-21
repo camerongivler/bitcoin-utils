@@ -26,28 +26,3 @@ class ExchangePair:
                 str("%.3f" % diffp).rjust(6) + "%")
         price = price1 if exchange == 0 else price2
         return diffp, price
-
-    # exchange is 0 or 1
-    def buy(self, exchange, runningAverage):
-        buyExch = self[exchange]
-        bestKey = None
-        bestDiff = float('Inf') if exchange == 0 else -float('Inf')
-        bestPrice = 0
-        i = 0
-        for key in self[0].wallets.keys():
-            if key == buyExch.arbitrar.currency: continue
-            if not key in self[1].wallets.keys(): continue
-            diffp, price = self.getDiff(key, exchange)
-            runningAverage = runningAverage * 3599 / 3600 + diffp/3600
-            i += 1
-
-            if diffp < bestDiff and exchange == 0 or diffp > bestDiff and exchange == 1:
-                bestKey = key
-                bestDiff = diffp
-                bestPrice = price
-
-        buyExch.buy(bestKey)
-        time.sleep(2*i if i > 0 else 2)
-
-        buySymbol = buyExch.valueWallet.currency + "-" + buyExch.arbitrar.currency
-        return buySymbol, bestPrice, bestKey, runningAverage

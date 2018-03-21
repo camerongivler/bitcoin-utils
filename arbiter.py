@@ -81,7 +81,7 @@ while True:
                 buyExchange = 0 if arbitrarExchange == 1 else 1
 
                 sellSymbol, sellRate = exchange[sellExchange].sell()
-                buySymbol, buyRate, lastKey, runningAverage = exchange.buy(0, runningAverage)
+                buySymbol, buyRate = exchange[buyExchange].buy(lastKey)
 
                 totalValue = exchange[buyExchange].getValue() + exchange[sellExchange].getValue()
                 #last = difference between exchanges on last trade
