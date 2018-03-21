@@ -24,9 +24,9 @@ for exchange in exchanges.values():
     if exchange.valueWallet.currency != arbitrar:
         lastKey = exchange.valueWallet.currency
 
-#cutoff = 1.42 # %  - this will guarentee 0.2% per trade
-cutoff = 0 # for testing
-runningAverage = 0.1 #keep track of the running average over the past ~2 hours
+cutoff = 1.42 # %  - this will guarentee 0.2% per trade
+#cutoff = 0 # for testing
+runningAverage = 0.2 #keep track of the running average over the past ~2 hours
 
 trades=[]
 #First trade loses money, but gets the ball rolling
@@ -74,8 +74,8 @@ while True:
                 print("goal : <" + str("%.3f" % goal) + "%")
             print()
 
-            if diffp >= goal and arbitrarExchange == 1 # price2 is higher
-                    or diffp <= goal and arbitrarExchange == 2: # price1 is higher
+            if diffp >= goal and arbitrarExchange == 1 \
+                    or diffp <= goal and arbitrarExchange == 2:
 
                 sellExchange = 1 if arbitrarExchange == 1 else 0
                 buyExchange = 0 if arbitrarExchange == 1 else 1
