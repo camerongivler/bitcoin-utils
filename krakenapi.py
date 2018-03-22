@@ -9,12 +9,12 @@ class Kraken(ExchangeBase):
 
     def __init__(self):
         super().__init__()
-        self.wallets["LTC"] = Wallet("LTC", 0)
-        self.wallets["ETH"] = Wallet("ETH", 0)
-        self.wallets["BCH"] = Wallet("BCH", 0)
-        self.wallets["BTC"] = Wallet("BTC", 0)
-        self.wallets["USD"] = Wallet("USD", 500)
-        self.value = self.wallets["USD"]
+        self.wallets["LTC"] = Wallet("LTC")
+        self.wallets["ETH"] = Wallet("ETH")
+        self.wallets["BCH"] = Wallet("BCH")
+        self.wallets["BTC"] = Wallet("BTC")
+        self.wallets["USD"] = Wallet("USD")
+        self.valueWallet = self.wallets["USD"]
 
         self.fee = 0.0026
     
@@ -26,3 +26,4 @@ class Kraken(ExchangeBase):
 
     def getName(self):
         return "kraken"
+
