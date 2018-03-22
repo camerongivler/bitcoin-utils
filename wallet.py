@@ -22,4 +22,8 @@ class Wallet:
         self.saveAmount()
         
     def getAmount(self):
+<<<<<<< HEAD
         return self.amount
+=======
+        return self.amount
+>>>>>>> awe

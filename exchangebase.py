@@ -5,8 +5,11 @@ class ExchangeBase:
     def __init__(self):
         self.wallets = {}
         self.fee = 0
-        self.value = Wallet("null",0)
-        self.arbitrar = Wallet("null",0)
+        # Value of all wallets, in arbiter currency (USD)
+        self.value = 0
+        # Wallet that contains the value
+        self.valueWallet = Wallet("null")
+        self.arbitrar = Wallet("null")
     
     # The symbols will be taken in GDAX form (BTC-USD) and converted appropriately
     def getLastTradePrice(self, symbol):
@@ -19,6 +22,11 @@ class ExchangeBase:
     # The name of the exchange, in percent
     def getFee(self):
         return self.fee*100
+    
+    # The value of the exchange, in arbitrar currency
+    # NOTE: This value will be 0 until first transaction
+    def getValue(self):
+        return self.value
     
     # The arbitrar
     def setArbitrar(self, arbitrarName):

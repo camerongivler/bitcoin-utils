@@ -5,6 +5,7 @@ from krakenapi import Kraken
 from geminiapi import Gemini
 from gdaxapi import Gdax
 from itertools import combinations
+from exchangepair import ExchangePair
 
 #Set up 'exchanges' dictionary to hold all of the exchanges
 exchanges = {}
@@ -12,49 +13,22 @@ exchanges["kraken"] = Kraken()
 exchanges["gdax"] = Gdax()
 #exchanges["gemini"] = Gemini()
 
+exchangePairs = []
+for exchange in combinations(exchanges.values(), 2): # 2 for pairs, 3 for triplets, etc
+    exchangePairs.append(ExchangePair(exchange[0], exchange[1]))
+
 arbitrar = "USD"
 for exchange in exchanges.values():
     exchange.setArbitrar(arbitrar)
 
 cutoff = 1.22 # %  - this will guarentee 0.1% per trade
+#cutoff = 0.1 # for testing
+runningAverage = 0.2 #keep track of the running average over the past ~2 hours
 
 trades=[]
 #First trade loses money, but gets the ball rolling
-last = -cutoff/2
+last = runningAverage-cutoff/2
 totalGain = 1
-runningAverage = 0 #keep track of the running average over the past hour
-
-def doArbitrage(exchange1, exchange2, arbitrar, key, price, bestDiff):
-
-    #Access the global variables already defined before the function
-    global last, totalGain, trades
-
-    sellWallet = exchange1.value
-    buyWallet = exchange1.arbitrar
-    sellSymbol = sellWallet.currency + "-" + arbitrar
-    sellRate = exchange1.getLastTradePrice(sellSymbol)
-    
-    exchange1.transact(sellWallet, buyWallet, sellWallet.amount, sellRate)
-
-    sellWallet = exchange2.arbitrar
-    buyWallet = exchange2.wallets[key]
-    buySymbol = key + "-" + arbitrar
-
-    exchange2.transact(sellWallet, buyWallet, sellWallet.amount, 1/price)
-
-    #last = difference between exchanges on last trade
-    realDiff = bestDiff - last
-    last = bestDiff
-    realGain = abs(realDiff) / 2 - exchange1.getFee() - exchange2.getFee()
-    totalGain *= 1 + realGain/100
-    localtime = time.asctime( time.localtime(time.time()) )
-    trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange1.getName()
-            +"; Bought "+buySymbol+" at "+str(price)+" on "+exchange2.getName()
-            +"; diff: " + str("%.3f" % bestDiff) + "%; gain: " + str("%.3f" % realDiff)+"%"
-            +"\n\tReal Gain: " + str("%.3f" % realGain) + "%; Total (multiplier): "
-            +str("%.6f" % totalGain) + "; time: "+localtime)
-      
-    time.sleep(2)
 
 #Infinite loop
 while True:
@@ -64,21 +38,21 @@ while True:
     for exchName,exchange in exchanges.items():
         print(exchName)
         for walletName,wallet in exchange.wallets.items():
-            if wallet.amount > 0: print(wallet.currency,":",wallet.amount)
+            if wallet.amount > 0: print(wallet.currency,":",round(wallet.amount,5))
     print()
 
-    for exchange in combinations(exchanges.values(), 2): # 2 for pairs, 3 for triplets, etc
+    for exchange in exchangePairs: # 2 for pairs, 3 for triplets, etc
         # Check to make sure exactly one has USD
         arbitrarExchange = 0
-        if exchange[0].value.currency == arbitrar:
+        if exchange[0].valueWallet.currency == arbitrar:
             arbitrarExchange = 1
-        if exchange[1].value.currency == arbitrar:
+        if exchange[1].valueWallet.currency == arbitrar:
             arbitrarExchange += 2
         if arbitrarExchange == 0 or arbitrarExchange == 3:
             continue
         i = 0
         try:
-            bestDiff = 0
+            bestDiff = runningAverage
             bestKey = ""
             bestPrice1 = 0
             bestPrice2 = 0
@@ -123,10 +97,10 @@ while True:
             print()
 
             if bestDiff >= goal and arbitrarExchange == 1: # price2 is higher
-                doArbitrage(exchange[1], exchange[0], arbitrar, bestKey, bestPrice1, bestDiff)
-                        
+                last, totalGain = exchange.doArbitrage(1, bestKey, bestDiff, last, totalGain, trades)
+
             if bestDiff <= goal and arbitrarExchange == 2: # price1 is higher
-                doArbitrage(exchange[0], exchange[1], arbitrar, bestKey, bestPrice2, bestDiff)
+                last, totalGain = exchange.doArbitrage(0, bestKey, bestDiff, last, totalGain, trades)
 
             for trade in trades:
                 print(trade)
@@ -138,8 +112,9 @@ while True:
             trades.append("Unexpected "+exc_type.__name__+
                     " at "+fname +":"+str(exc_tb.tb_lineno)+
                     " on "+localtime+": \"" + str(e) + "\"")
-            time.sleep(2*i)
+            print(trades[-1])
+            time.sleep(2*i if i > 0 else 2)
 
         # So we don't get rate limited by exchanges
-        time.sleep(2*i)
+        time.sleep(2*i if i > 0 else 2)
 

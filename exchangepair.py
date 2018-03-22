@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+#!/usr/bin/env python3
+>>>>>>> awe
 import time
 from exchangebase import ExchangeBase
 
