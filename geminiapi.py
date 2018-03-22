@@ -12,9 +12,9 @@ class Gemini(ExchangeBase):
     def __init__(self):
         #set up wallets
         self.wallets = {}
-        self.wallets["ETH"] = Wallet("gemini", "ETH", 0)
-        self.wallets["BTC"] = Wallet("gemini", "BTC", 0)
-        self.wallets["USD"] = Wallet("gemini", "USD", 0)
+        self.wallets["ETH"] = Wallet("gemini", "ETH")
+        self.wallets["BTC"] = Wallet("gemini", "BTC")
+        self.wallets["USD"] = Wallet("gemini", "USD")
         self.fee = 0.0025
         self.valueWallet = self.wallets["BTC"]
     
