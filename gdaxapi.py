@@ -7,15 +7,14 @@ class Gdax(ExchangeBase):
 
     def __init__(self):
         super().__init__()
-        self.wallets["LTC"] = Wallet("LTC", 0)
-        self.wallets["ETH"] = Wallet("ETH", 0)
-        self.wallets["BCH"] = Wallet("BCH", 0)
-        self.wallets["BTC"] = Wallet("BTC", 0.063267)
-        self.wallets["USD"] = Wallet("USD", 0)
+        self.wallets["LTC"] = Wallet("LTC")
+        self.wallets["ETH"] = Wallet("ETH")
+        self.wallets["BCH"] = Wallet("BCH")
+        self.wallets["BTC"] = Wallet("BTC")
+        self.wallets["USD"] = Wallet("USD")
+        self.valueWallet = self.wallets["BTC"]
 
         self.fee = 0.0025
-
-        self.value = self.wallets["BTC"]
 
     def getLastTradePrice(self, symbol):
         ticker = {}
