@@ -8,8 +8,8 @@ class ExchangeBase:
         # Value of all wallets, in arbiter currency (USD)
         self.value = 0
         # Wallet that contains the value
-        self.valueWallet = Wallet("null",0)
-        self.arbitrar = Wallet("null",0)
+        self.valueWallet = Wallet("null")
+        self.arbitrar = Wallet("null")
     
     # The symbols will be taken in GDAX form (BTC-USD) and converted appropriately
     def getLastTradePrice(self, symbol):
@@ -36,11 +36,11 @@ class ExchangeBase:
     #it to the buy wallet taking out the fee and multiplied by the rate
     def transact(self, sellWallet, buyWallet, rate):
         if(sellWallet == self.arbitrar):
-            self.value = sellWallet.amount * (1-self.fee)
+            self.value = sellWallet.getAmount() * (1-self.fee)
 
-        buyWallet.amount += sellWallet.amount * (1-self.fee) * rate
-        sellWallet.amount = 0
+        buyWallet.setAmount(buyWallet.getAmount() + sellWallet.getAmount() * (1-self.fee) * rate)
+        sellWallet.setAmount(0)
         self.valueWallet = buyWallet
 
         if(buyWallet == self.arbitrar):
-            self.value = buyWallet.amount
+            self.value = buyWallet.getAmount()
