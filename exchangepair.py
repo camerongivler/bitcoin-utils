@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-#!/usr/bin/env python3
->>>>>>> awe
-=======
->>>>>>> 347106cda715f1b8704de7a02cdbe674b1d05dac
 import time
 from exchangebase import ExchangeBase
 
