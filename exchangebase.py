@@ -26,9 +26,13 @@ class ExchangeBase:
 
     #exchange method that takes money from the sellWallet and adds
     #it to the buy wallet taking out the fee and multiplied by the rate
-    def transact(self, sellWallet, buyWallet, amount, rate):
-        if sellWallet.amount < amount: return False
-        sellWallet.amount -= amount
-        buyWallet.amount += amount * (1-self.fee) * rate
-        self.value = buyWallet
-        return True
+    def transact(self, sellWallet, buyWallet, rate):
+        if(sellWallet == self.arbitrar):
+            self.value = sellWallet.getAmount() * (1-self.fee)
+
+        buyWallet.setAmount(buyWallet.getAmount() + sellWallet.getAmount() * (1-self.fee) * rate)
+        sellWallet.setAmount(0)
+        self.valueWallet = buyWallet
+
+        if(buyWallet == self.arbitrar):
+            self.value = buyWallet.getAmount()
