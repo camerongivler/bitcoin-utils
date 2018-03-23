@@ -46,8 +46,7 @@ class ExchangePair:
                 bestDiff = diffp
                 bestPrice = price
 
-        buyExch.buy(bestKey)
+        buySymbol, buyRate = buyExch.buy(bestKey)
         time.sleep(2*i if i > 0 else 2)
 
-        buySymbol = buyExch.valueWallet.currency + "-" + buyExch.arbitrar.currency
-        return buySymbol, bestPrice, bestKey, runningAverage
+        return buySymbol, buyRate, bestKey, runningAverage

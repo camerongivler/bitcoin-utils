@@ -26,7 +26,7 @@ for exchange in exchanges.values():
 
 cutoff = 1.42 # %  - this will guarentee 0.2% per trade
 #cutoff = 0 # for testing
-runningAverage = 0.2 #keep track of the running average over the past ~2 hours
+runningAverage = 0.15 #keep track of the running average over the past ~2 hours
 
 trades=[]
 #First trade loses money, but gets the ball rolling
@@ -64,12 +64,12 @@ while True:
 
             goal = 0
             if arbitrarExchange == 1:
-                minimum = runningAverage + cutoff/4
+                minimum = runningAverage + cutoff/3
                 goal = last + cutoff if last + cutoff > minimum else minimum
                 print("goal : >" + str("%.3f" % goal) + "%")
 
             if arbitrarExchange == 2:
-                maximum = runningAverage - cutoff/4
+                maximum = runningAverage - cutoff/3
                 goal = last - cutoff if last - cutoff < maximum else maximum
                 print("goal : <" + str("%.3f" % goal) + "%")
             print()
