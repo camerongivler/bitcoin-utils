@@ -64,12 +64,12 @@ while True:
 
             goal = 0
             if arbitrarExchange == 1:
-                minimum = runningAverage + cutoff/3
+                minimum = runningAverage + cutoff/2
                 goal = last + cutoff if last + cutoff > minimum else minimum
                 print("goal : >" + str("%.3f" % goal) + "%")
 
             if arbitrarExchange == 2:
-                maximum = runningAverage - cutoff/3
+                maximum = runningAverage - cutoff/2
                 goal = last - cutoff if last - cutoff < maximum else maximum
                 print("goal : <" + str("%.3f" % goal) + "%")
             print()
@@ -81,7 +81,7 @@ while True:
                 buyExchange = 0 if arbitrarExchange == 1 else 1
 
                 sellSymbol, sellRate = exchange[sellExchange].sell()
-                buySymbol, buyRate, lastKey, runningAverage = exchange.buy(0, runningAverage)
+                buySymbol, buyRate, lastKey, runningAverage = exchange.buy(buyExchange, runningAverage)
 
                 totalValue = exchange[buyExchange].getValue() + exchange[sellExchange].getValue()
                 #last = difference between exchanges on last trade
