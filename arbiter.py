@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os, time, sys
+import os, time, sys, traceback
 from wallet import Wallet
 from krakenapi import Kraken
 from geminiapi import Gemini
@@ -13,9 +13,12 @@ exchanges["kraken"] = Kraken()
 exchanges["gdax"] = Gdax()
 #exchanges["gemini"] = Gemini()
 
+cutoff = 1.42 # %  - this will guarentee 0.1% per trade
+#cutoff = 0 # for testing
+
 exchangePairs = []
 for exchange in combinations(exchanges.values(), 2): # 2 for pairs, 3 for triplets, etc
-    exchangePairs.append(ExchangePair(exchange[0], exchange[1]))
+    exchangePairs.append(ExchangePair(cutoff, exchange[0], exchange[1]))
 
 arbitrar = "USD"
 lastKey = ""
@@ -24,13 +27,8 @@ for exchange in exchanges.values():
     if exchange.valueWallet.currency != arbitrar:
         lastKey = exchange.valueWallet.currency
 
-cutoff = 1.42 # %  - this will guarentee 0.2% per trade
-#cutoff = 0 # for testing
-runningAverage = 0.15 #keep track of the running average over the past ~2 hours
-
 trades=[]
 #First trade loses money, but gets the ball rolling
-last = runningAverage-cutoff/2
 totalGain = 1
 
 #Infinite loop
@@ -57,19 +55,16 @@ while True:
         try:
             diffp, price = exchange.getDiff(lastKey, 0)
 
-            # About 3600 price checks every 2 hours
-            runningAverage = runningAverage * 3599/ 3600 + diffp/3600
-            print()
-            print("runningAverage: " + str("%.3f" % runningAverage) + "%")
+            last = exchange.last
 
             goal = 0
             if arbitrarExchange == 1:
-                minimum = runningAverage + cutoff/2
+                minimum = exchange.runningAverages[lastKey] + cutoff/2
                 goal = last + cutoff if last + cutoff > minimum else minimum
                 print("goal : >" + str("%.3f" % goal) + "%")
 
             if arbitrarExchange == 2:
-                maximum = runningAverage - cutoff/2
+                maximum = exchange.runningAverages[lastKey] - cutoff/2
                 goal = last - cutoff if last - cutoff < maximum else maximum
                 print("goal : <" + str("%.3f" % goal) + "%")
             print()
@@ -81,16 +76,17 @@ while True:
                 buyExchange = 0 if arbitrarExchange == 1 else 1
 
                 sellSymbol, sellRate = exchange[sellExchange].sell()
-                buySymbol, buyRate, lastKey, runningAverage = exchange.buy(buyExchange, runningAverage)
+                buySymbol, buyRate, lastKey = exchange.buy(buyExchange)
 
                 totalValue = exchange[buyExchange].getValue() + exchange[sellExchange].getValue()
                 #last = difference between exchanges on last trade
                 realDiff = diffp - last
                 exchange1fee = 2 * exchange[buyExchange].getFee() * exchange[buyExchange].getValue() / totalValue
                 exchange2fee = 2 * exchange[sellExchange].getFee() * exchange[sellExchange].getValue() / totalValue
-                realGain = abs(realDiff) / 2 - exchange1fee - exchange2fee
+                # divide by 2 bc we only make money on money in crypto,
+                # then again because we only make money in 1 direction (pos or neg)
+                realGain = (abs(realDiff) / 2 - exchange1fee - exchange2fee)/2
                 totalGain *= 1 + realGain/100
-                last = diffp
                 localtime = time.asctime( time.localtime(time.time()) )
 
                 trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange[sellExchange].getName()
@@ -111,6 +107,7 @@ while True:
                     " at "+fname +":"+str(exc_tb.tb_lineno)+
                     " on "+localtime+": \"" + str(e) + "\"")
             print(trades[-1])
+            print(traceback.format_exc())
             time.sleep(2*i if i > 0 else 2)
 
         # So we don't get rate limited by exchanges
