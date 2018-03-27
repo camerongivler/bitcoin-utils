@@ -47,12 +47,12 @@ class ExchangePair:
             if key == buyExch.arbitrar.currency: continue
             if not key in self[1].wallets.keys(): continue
             diffp, price = self.getDiff(key, exchange)
-            self.runningAverages[key] = self.runningAverages[key] * 3599 / 3600 + diffp/3600
+            normalizedDiff = diffp - self.runningAverages[key]
             i += 1
 
-            if diffp > bestDiff and exchange == 0 or diffp < bestDiff and exchange == 1:
+            if normalizedDiff > bestDiff and exchange == 0 or normalizedDiff < bestDiff and exchange == 1:
                 bestKey = key
-                bestDiff = diffp
+                bestDiff = normalizedDiff
                 bestPrice = price
 
         buySymbol, buyRate = buyExch.buy(bestKey)

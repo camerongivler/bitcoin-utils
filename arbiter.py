@@ -59,13 +59,13 @@ while True:
 
             goal = 0
             if arbitrarExchange == 1:
-                minimum = exchange.runningAverages[lastKey] + cutoff/2
-                goal = last + cutoff if last + cutoff > minimum else minimum
+                goal = exchange.runningAverages[lastKey] + cutoff/2
+                #goal = last + cutoff if last + cutoff > minimum else minimum
                 print("goal : >" + str("%.3f" % goal) + "%")
 
             if arbitrarExchange == 2:
-                maximum = exchange.runningAverages[lastKey] - cutoff/2
-                goal = last - cutoff if last - cutoff < maximum else maximum
+                goal = exchange.runningAverages[lastKey] - cutoff/2
+                #goal = last - cutoff if last - cutoff < maximum else maximum
                 print("goal : <" + str("%.3f" % goal) + "%")
             print()
 
@@ -80,7 +80,7 @@ while True:
 
                 totalValue = exchange[buyExchange].getValue() + exchange[sellExchange].getValue()
                 #last = difference between exchanges on last trade
-                realDiff = diffp - last
+                realDiff = exchange.last - last
                 exchange1fee = 2 * exchange[buyExchange].getFee() * exchange[buyExchange].getValue() / totalValue
                 exchange2fee = 2 * exchange[sellExchange].getFee() * exchange[sellExchange].getValue() / totalValue
                 # divide by 2 bc we only make money on money in crypto,
@@ -91,7 +91,7 @@ while True:
 
                 trades.append("Sold "+sellSymbol+" at "+str(sellRate)+" on "+exchange[sellExchange].getName()
                         +"; Bought "+buySymbol+" at "+str(buyRate)+" on "+exchange[buyExchange].getName()
-                        +"; diff: " + str("%.3f" % diffp) + "%; gain: " + str("%.3f" % realDiff)+"%"
+                        +"; diff: " + str("%.3f" % exchange.last) + "%; gain: " + str("%.3f" % realDiff)+"%"
                         +"\n\tReal Gain: " + str("%.3f" % realGain) + "%; Total (multiplier): "
                         +str("%.6f" % totalGain) + "; time: "+localtime
                         +"\n\t\tTotal Value of portfolio: "+str(totalValue))
