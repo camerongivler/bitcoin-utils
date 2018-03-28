@@ -32,17 +32,17 @@ class ExchangeBase:
     def setArbitrar(self, arbitrarName):
         self.arbitrar = self.wallets[arbitrarName]
 
-    def sell(self):
-        sellSymbol = self.valueWallet.currency + "-" + self.arbitrar.currency
-        rate = self.getLastTradePrice(self.valueWallet.currency + "-" + self.arbitrar.currency)
-        self.transact(self.valueWallet, self.arbitrar, rate)
-        return sellSymbol, rate
-
     def buy(self, key):
         buySymbol = key + "-" + self.arbitrar.currency
         rate = self.getLastTradePrice(key + "-" + self.arbitrar.currency)
         self.transact(self.arbitrar, self.wallets[key], 1/rate)
-        return buySymbol, rate
+        return buySymbol, rate * (1-self.fee)
+
+    def sell(self):
+        sellSymbol = self.valueWallet.currency + "-" + self.arbitrar.currency
+        rate = self.getLastTradePrice(self.valueWallet.currency + "-" + self.arbitrar.currency)
+        self.transact(self.valueWallet, self.arbitrar, rate)
+        return sellSymbol, rate * (1+self.fee)
 
     #exchange method that takes money from the sellWallet and adds
     #it to the buy wallet taking out the fee and multiplied by the rate
