@@ -7,16 +7,20 @@ from wallet import Wallet
 from exchangebase import ExchangeBase
 from hashlib import sha384
 
+# For public API entry points, we limit requests to 120 requests per minute,
+#   and recommend that you do not exceed 1 request per second.
+# For private API entry points, we limit requests to 600 requests per minute,
+#   and recommend that you not exceed 5 requests per second.
 class Gemini(ExchangeBase):
     
     def __init__(self):
         #set up wallets
         self.wallets = {}
-        self.wallets["ETH"] = Wallet("gemini", "ETH", 0)
-        self.wallets["BTC"] = Wallet("gemini", "BTC", 0)
-        self.wallets["USD"] = Wallet("gemini", "USD", 0)
+        self.wallets["ETH"] = Wallet("ETH", 0)
+        self.wallets["BTC"] = Wallet("BTC", 0)
+        self.wallets["USD"] = Wallet("USD", 500)
+        self.valueWallet = self.wallets["USD"]
         self.fee = 0.0025
-        self.valueWallet = self.wallets["BTC"]
     
     def request(url):
         timeout = 5
