@@ -40,7 +40,7 @@ class Gemini(ExchangeBase):
         return "gemini"
 
 class Private:
-    def test():
+    def test(self):
         timeout = 5
 
         key = json.load(open('geminiKey.json'))
@@ -64,4 +64,6 @@ class Private:
         response = requests.post(key["url"], data=None, headers=request_headers, timeout=timeout, verify=True)
         print(response)
         assert response.status_code == 200
-        print(response.content)
+
+p = Private()
+p.test()

@@ -9,11 +9,11 @@ from exchangepair import ExchangePair
 
 #Set up 'exchanges' dictionary to hold all of the exchanges
 exchanges = {}
-#exchanges["kraken"] = Kraken()
-exchanges["gemini"] = Gemini()
+exchanges["kraken"] = Kraken()
+#exchanges["gemini"] = Gemini()
 exchanges["gdax"] = Gdax()
 
-cutoff = 1.4 # %  - this will guarentee 0.1% per trade
+cutoff = 1.22 # %  - this will guarentee 0.1% per trade
 #cutoff = 0 # for testing
 
 exchangePairs = []
@@ -53,7 +53,7 @@ while True:
             continue
         i = 1
         try:
-            diffp, price = exchange.getDiff(lastKey, 0)
+            diffp = exchange.getDiff(lastKey)
 
             last = exchange.last
 
@@ -108,8 +108,8 @@ while True:
                     " on "+localtime+": \"" + str(e) + "\"")
             print(trades[-1])
             print(traceback.format_exc())
-            time.sleep(i if i > 0 else 2)
+            time.sleep(2*i if i > 0 else 2)
 
         # So we don't get rate limited by exchanges
-        time.sleep(i if i > 0 else 2)
+        time.sleep(2*i if i > 0 else 2)
 

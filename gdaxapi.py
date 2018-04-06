@@ -10,10 +10,10 @@ class Gdax(ExchangeBase):
         super().__init__()
         self.wallets["LTC"] = Wallet("LTC", 0)
         self.wallets["ETH"] = Wallet("ETH", 0)
-        self.wallets["BCH"] = Wallet("BCH", 0)
-        self.wallets["BTC"] = Wallet("BTC", 0.068213)
+        self.wallets["BCH"] = Wallet("BCH", 0.785447)
+        self.wallets["BTC"] = Wallet("BTC", 0)
         self.wallets["USD"] = Wallet("USD", 0)
-        self.valueWallet = self.wallets["BTC"]
+        self.valueWallet = self.wallets["BCH"]
 
         self.fee = 0.0025
 
@@ -21,6 +21,34 @@ class Gdax(ExchangeBase):
         ticker = {}
         ticker = self.g.get_product_ticker(symbol)
         return float(ticker['price'])
+
+    def getBuyPriceFor(self, key):
+        symbol = key + "-" + self.arbitrar.currency
+        book = self.g.get_product_order_book(symbol, level=2)
+        fullAmount = amount = self.arbitrar.amount
+        price = i = 0
+        while amount > 0:
+            thisPrice = float(book['asks'][i][0])
+            volume = float(book['asks'][i][1])
+            thisAmount = amount if amount < volume * thisPrice else volume * thisPrice
+            price += thisPrice * thisAmount / fullAmount
+            amount -= thisAmount
+            i += 1
+        return price
+
+    def getSellPriceFor(self, key):
+        symbol = key + "-" + self.arbitrar.currency
+        book = self.g.get_product_order_book(symbol, level=2)
+        fullAmount = amount = self.wallets[key].amount
+        price = i = 0
+        while amount > 0:
+            thisPrice = float(book['bids'][i][0])
+            volume = float(book['bids'][i][1])
+            thisAmount = amount if amount < volume else volume
+            price += thisPrice * thisAmount / fullAmount
+            amount -= thisAmount
+            i += 1
+        return price
 
     def getName(self):
         return "gdax"

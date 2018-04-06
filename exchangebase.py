@@ -15,6 +15,12 @@ class ExchangeBase:
     def getLastTradePrice(self, symbol):
         raise NotImplementedError( "Need to implement this in exchange subclass" )
 
+    def getBuyPriceFor(self, key):
+        raise NotImplementedError( "Need to implement this in exchange subclass" )
+
+    def getSellPriceFor(self, key):
+        raise NotImplementedError( "Need to implement this in exchange subclass" )
+
     # The name of the exchange
     def getName(self):
         raise NotImplementedError( "Need to implement this in exchange subclass" )
@@ -34,13 +40,14 @@ class ExchangeBase:
 
     def buy(self, key):
         buySymbol = key + "-" + self.arbitrar.currency
-        rate = self.getLastTradePrice(key + "-" + self.arbitrar.currency)
+        rate = self.getBuyPriceFor(key)
         self.transact(self.arbitrar, self.wallets[key], 1/rate)
         return buySymbol, rate * (1+self.fee)
 
     def sell(self):
-        sellSymbol = self.valueWallet.currency + "-" + self.arbitrar.currency
-        rate = self.getLastTradePrice(self.valueWallet.currency + "-" + self.arbitrar.currency)
+        key = self.valueWallet.currency
+        sellSymbol = key + "-" + self.arbitrar.currency
+        rate = self.getSellPriceFor(key)
         self.transact(self.valueWallet, self.arbitrar, rate)
         return sellSymbol, rate * (1-self.fee)
 
