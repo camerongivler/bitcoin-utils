@@ -58,7 +58,8 @@ class Kraken(ExchangeBase):
             i += 1
         return price
 
-    def getSellPriceFor(self, key):
+    def getSellPrice(self):
+        key = self.valueWallet.currency
         symbol = key + "-" + self.arbitrar.currency
         pair = symbols[symbol]
         book = self.k.get_order_book(pair)[1].infer_objects().sort_values(by=['price'], ascending=False)
@@ -72,6 +73,18 @@ class Kraken(ExchangeBase):
             amount -= thisAmount
             i += 1
         return price
+
+    def getHighestBidPriceFor(self, key):
+        symbol = key + "-" + self.arbitrar.currency
+        pair = symbols[symbol]
+        book = self.k.get_order_book(pair)[1].infer_objects().sort_values(by=['price'], ascending=False)
+        return book.iloc[0]['price']
+
+    def getLowestAskPriceFor(self, key):
+        symbol = key + "-" + self.arbitrar.currency
+        pair = symbols[symbol]
+        book = self.k.get_order_book(pair)[0].infer_objects().sort_values(by=['price'])
+        return book.iloc[0]['price']
 
     def getName(self):
         return "kraken"

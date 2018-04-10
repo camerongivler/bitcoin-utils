@@ -36,7 +36,8 @@ class Gdax(ExchangeBase):
             i += 1
         return price
 
-    def getSellPriceFor(self, key):
+    def getSellPrice(self):
+        key = self.valueWallet.currency
         symbol = key + "-" + self.arbitrar.currency
         book = self.g.get_product_order_book(symbol, level=2)
         fullAmount = amount = self.wallets[key].amount
@@ -49,6 +50,16 @@ class Gdax(ExchangeBase):
             amount -= thisAmount
             i += 1
         return price
+
+    def getHighestBidPriceFor(self, key):
+        symbol = key + "-" + self.arbitrar.currency
+        book = self.g.get_product_order_book(symbol, level=2)
+        return float(book['bids'][0][0])
+
+    def getLowestAskPriceFor(self, key):
+        symbol = key + "-" + self.arbitrar.currency
+        book = self.g.get_product_order_book(symbol, level=2)
+        return float(book['asks'][0][0])
 
     def getName(self):
         return "gdax"

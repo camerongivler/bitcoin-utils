@@ -8,7 +8,7 @@ class ExchangePair:
         self.exchange1 = exchange1
         self.runningAverages = {} #keep track of the running average over the past ~2 hours
         for key in exchange0.wallets.keys():
-            self.runningAverages[key] = 0.1
+            self.runningAverages[key] = 0
         self.last = 0.2-cutoff/2
 
     def __getitem__(self, index):
@@ -24,9 +24,9 @@ class ExchangePair:
         symbol = key + "-" + self[0].arbitrar.currency
         if buyExchange == 0:
             price1 = self[0].getBuyPriceFor(key)
-            price2 = self[1].getSellPriceFor(key)
+            price2 = self[1].getSellPrice()
         else:
-            price1 = self[0].getSellPriceFor(key)
+            price1 = self[0].getSellPrice()
             price2 = self[1].getBuyPriceFor(key)
 
         return self.calculateDiff(key, price1, price2)
@@ -40,8 +40,8 @@ class ExchangePair:
         print(symbol,":", (self[0].getName() if diff < 0 else self[1].getName()).ljust(6),
                 str("%.3f" % diffp).rjust(6) + "%\n")
 
-        # About 3600 price checks every 2 hours
-        self.runningAverages[key] = self.runningAverages[key] * 3599/ 3600 + diffp/3600
+        # About 43200 price checks every 24 hours
+        self.runningAverages[key] = (self.runningAverages[key] * 43199 + diffp)/43200
         print("runningAverage: " + str("%.3f" % self.runningAverages[key]) + "%")
 
         return diffp
