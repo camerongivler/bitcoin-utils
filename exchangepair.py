@@ -42,6 +42,8 @@ class ExchangePair:
 
         # About 43200 price checks every 24 hours
         self.runningAverages[key] = (self.runningAverages[key] * 43199 + diffp)/43200
+        # About 3600 price checks every 2 hours
+        #self.runningAverages[key] = (self.runningAverages[key] * 3599 + diffp)/3600
         print("runningAverage: " + str("%.3f" % self.runningAverages[key]) + "%")
 
         return diffp

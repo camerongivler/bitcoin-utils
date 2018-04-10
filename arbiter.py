@@ -13,7 +13,7 @@ exchanges["kraken"] = Kraken()
 #exchanges["gemini"] = Gemini()
 exchanges["gdax"] = Gdax()
 
-cutoff = 1.22 # %  - this will guarentee 0.1% per trade
+cutoff = 1 # %  - this will guarentee 0.1% per trade
 #cutoff = 0 # for testing
 
 exchangePairs = []

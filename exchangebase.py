@@ -27,6 +27,12 @@ class ExchangeBase:
     def getLowestAskPriceFor(self, key):
         raise NotImplementedError( "Need to implement this in exchange subclass" )
 
+    def getMarketBuyPriceFor(self, key, amount):
+        raise NotImplementedError( "Need to implement this in exchange subclass" )
+
+    def getMarketSellPriceFor(self, key, amount):
+        raise NotImplementedError( "Need to implement this in exchange subclass" )
+
     # The name of the exchange
     def getName(self):
         raise NotImplementedError( "Need to implement this in exchange subclass" )
