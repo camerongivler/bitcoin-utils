@@ -10,12 +10,13 @@ class Gdax(ExchangeBase):
         super().__init__()
         self.wallets["LTC"] = Wallet("LTC", 0)
         self.wallets["ETH"] = Wallet("ETH", 0)
-        self.wallets["BCH"] = Wallet("BCH", 0.78498)
+        self.wallets["BCH"] = Wallet("BCH", 0.769894)
         self.wallets["BTC"] = Wallet("BTC", 0)
         self.wallets["USD"] = Wallet("USD", 0)
         self.valueWallet = self.wallets["BCH"]
 
-        self.fee = 0.0025
+        #self.fee = 0.0025
+        self.fee = 0
 
     def getLastTradePrice(self, symbol):
         ticker = {}
@@ -23,11 +24,13 @@ class Gdax(ExchangeBase):
         return float(ticker['price'])
 
     def getBuyPriceFor(self, key):
-        return self.getMarketBuyPriceFor(key, self.arbitrar.amount)
+        #return self.getMarketBuyPriceFor(key, self.arbitrar.amount)
+        return self.getHighestBidPriceFor(key)
 
     def getSellPrice(self):
         key = self.valueWallet.currency
-        return self.getMarketSellPriceFor(key, self.wallets[key].amount)
+        #return self.getMarketSellPriceFor(key, self.wallets[key].amount)
+        return self.getLowestAskPriceFor(key)
 
     def getHighestBidPriceFor(self, key):
         symbol = key + "-" + self.arbitrar.currency

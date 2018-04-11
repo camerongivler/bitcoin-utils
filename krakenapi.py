@@ -48,12 +48,12 @@ class Kraken(ExchangeBase):
 
     def getBuyPriceFor(self, key):
         # Maker order
-        return self.getHighestBidPriceFor(key)+0.1
+        return self.getHighestBidPriceFor(key)
 
     def getSellPrice(self):
         key = self.valueWallet.currency
         # Maker order
-        return self.getLowestAskPriceFor(key)-0.1
+        return self.getLowestAskPriceFor(key)
 
     def getHighestBidPriceFor(self, key):
         symbol = key + "-" + self.arbitrar.currency

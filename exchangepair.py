@@ -8,7 +8,7 @@ class ExchangePair:
         self.exchange1 = exchange1
         self.runningAverages = {} #keep track of the running average over the past ~2 hours
         for key in exchange0.wallets.keys():
-            self.runningAverages[key] = 0
+            self.runningAverages[key] = 0.012
         self.last = 0.2-cutoff/2
 
     def __getitem__(self, index):
