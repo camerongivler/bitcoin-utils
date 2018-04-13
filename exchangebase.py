@@ -1,4 +1,5 @@
 from wallet import Wallet
+import time, os
 
 class ExchangeBase:
     
@@ -53,6 +54,14 @@ class ExchangeBase:
     def buy(self, key):
         buySymbol = key + "-" + self.arbitrar.currency
         rate = self.getBuyPriceFor(key)
+        while True:
+            time.sleep(2)
+            os.system('clear')
+            last = self.getLastTradePrice(buySymbol)
+            print("Waiting for",buySymbol,"ticker on",self.getName(),"to be less than","%.4f" % rate)
+            print("Ticker:",last)
+            if last < rate:
+                break
         self.transact(self.arbitrar, self.wallets[key], 1/rate)
         return buySymbol, rate * (1+self.fee)
 
@@ -60,6 +69,14 @@ class ExchangeBase:
         key = self.valueWallet.currency
         sellSymbol = key + "-" + self.arbitrar.currency
         rate = self.getSellPrice()
+        while True:
+            time.sleep(2)
+            os.system('clear')
+            last = self.getLastTradePrice(sellSymbol)
+            print("Waiting for",sellSymbol,"ticker on",self.getName(),"to be greater than","%.4f" % rate)
+            print("Ticker:",last)
+            if last > rate:
+                break
         self.transact(self.valueWallet, self.arbitrar, rate)
         return sellSymbol, rate * (1-self.fee)
 

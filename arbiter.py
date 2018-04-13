@@ -6,6 +6,8 @@ from geminiapi import Gemini
 from gdaxapi import Gdax
 from itertools import combinations
 from exchangepair import ExchangePair
+from exchangebase import ExchangeBase
+from multiprocessing.pool import ThreadPool
 
 #Set up 'exchanges' dictionary to hold all of the exchanges
 exchanges = {}
@@ -75,9 +77,16 @@ while True:
                 sellExchange = 1 if arbitrarExchange == 1 else 0
                 buyExchange = 0 if arbitrarExchange == 1 else 1
 
-                sellSymbol, sellRate = exchange[sellExchange].sell()
                 #buySymbol, buyRate, lastKey = exchange.buy(buyExchange)
-                buySymbol, buyRate = exchange[buyExchange].buy(lastKey)
+
+                # Do the buys and sells asynchronously
+                pool = ThreadPool(processes=2)
+                async_sell = pool.apply_async(ExchangeBase.sell, (exchange[sellExchange],))
+                async_buy = pool.apply_async(ExchangeBase.buy, (exchange[buyExchange], lastKey))
+                buySymbol, buyRate = async_buy.get()
+                sellSymbol, sellRate = async_sell.get()
+
+                exchange.last = diffp
 
                 totalValue = exchange[buyExchange].getValue() + exchange[sellExchange].getValue()
                 #last = difference between exchanges on last trade
@@ -86,7 +95,7 @@ while True:
                 exchange2fee = 2 * exchange[sellExchange].getFee() * exchange[sellExchange].getValue() / totalValue
                 # divide by 2 bc we only make money on money in crypto,
                 # then again because we only make money in 1 direction (pos or neg)
-                realGain = (sellRate/buyRate)*100/2
+                realGain = (sellRate/buyRate - 1)/2*100
                 totalGain *= 1 + realGain/100
                 localtime = time.asctime( time.localtime(time.time()) )
 

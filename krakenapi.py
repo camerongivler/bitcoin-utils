@@ -58,19 +58,19 @@ class Kraken(ExchangeBase):
     def getHighestBidPriceFor(self, key):
         symbol = key + "-" + self.arbitrar.currency
         pair = symbols[symbol]
-        book = self.k.get_order_book(pair)[1].infer_objects().sort_values(by=['price'], ascending=False)
+        book = self.k.get_order_book(pair)[1].astype('float').sort_values(by=['price'], ascending=False)
         return float(book.iloc[0]['price'])
 
     def getLowestAskPriceFor(self, key):
         symbol = key + "-" + self.arbitrar.currency
         pair = symbols[symbol]
-        book = self.k.get_order_book(pair)[0].infer_objects().sort_values(by=['price'])
+        book = self.k.get_order_book(pair)[0].astype('float').sort_values(by=['price'])
         return float(book.iloc[0]['price'])
 
     def getMarketBuyPriceFor(self, key, amount):
         symbol = key + "-" + self.arbitrar.currency
         pair = symbols[symbol]
-        book = self.k.get_order_book(pair)[0].infer_objects().sort_values(by=['price'])
+        book = self.k.get_order_book(pair)[0].astype('float').sort_values(by=['price'])
         fullAmount = amount
         price = i = 0
         while amount > 0:
@@ -85,7 +85,7 @@ class Kraken(ExchangeBase):
     def getMarketSellPriceFor(self, key, amount):
         symbol = key + "-" + self.arbitrar.currency
         pair = symbols[symbol]
-        book = self.k.get_order_book(pair)[1].infer_objects().sort_values(by=['price'], ascending=False)
+        book = self.k.get_order_book(pair)[1].astype('float').sort_values(by=['price'], ascending=False)
         fullAmount = amount
         price = i = 0
         while amount > 0:
