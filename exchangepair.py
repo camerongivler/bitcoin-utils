@@ -8,7 +8,7 @@ class ExchangePair:
         self.exchange1 = exchange1
         self.runningAverages = {} #keep track of the running average over the past ~2 hours
         for key in exchange0.wallets.keys():
-            self.runningAverages[key] = 0.012
+            self.runningAverages[key] = 0
         self.last = 0.2-cutoff/2
 
     def __getitem__(self, index):
@@ -48,28 +48,28 @@ class ExchangePair:
 
         return diffp
 
-    # exchange is 0 or 1
-    def buy(self, exchange):
-        buyExch = self[exchange]
-        bestKey = None
-        bestDiff = float('Inf') if exchange == 1 else -float('Inf')
-        i = 0
-        for key in self[0].wallets.keys():
-            if key == buyExch.arbitrar.currency: continue
-            if not key in self[1].wallets.keys(): continue
-            symbol = key+"-"+buyExch.arbitrar.currency
-            price1 = self[exchange].getLastTradePrice(symbol)
-            price2 = self[not exchange].getLastTradePrice(symbol)
-            diffp = self.calculateDiff(key, price1, price2)
-            normalizedDiff = diffp - self.runningAverages[key]
-            i += 1
+    # exchange is 0 or 1 - this is for multiple crypto arbitrage
+    #def buy(self, exchange):
+    #    buyExch = self[exchange]
+    #    bestKey = None
+    #    bestDiff = float('Inf') if exchange == 1 else -float('Inf')
+    #    i = 0
+    #    for key in self[0].wallets.keys():
+    #        if key == buyExch.arbitrar.currency: continue
+    #        if not key in self[1].wallets.keys(): continue
+    #        symbol = key+"-"+buyExch.arbitrar.currency
+    #        price1 = self[exchange].getLastTradePrice(symbol)
+    #        price2 = self[not exchange].getLastTradePrice(symbol)
+    #        diffp = self.calculateDiff(key, price1, price2)
+    #        normalizedDiff = diffp - self.runningAverages[key]
+    #        i += 1
 
-            if normalizedDiff > bestDiff and exchange == 0 or normalizedDiff < bestDiff and exchange == 1:
-                bestKey = key
-                bestDiff = normalizedDiff
+    #        if normalizedDiff > bestDiff and exchange == 0 or normalizedDiff < bestDiff and exchange == 1:
+    #            bestKey = key
+    #            bestDiff = normalizedDiff
 
-        buySymbol, buyRate = buyExch.buy(bestKey)
-        self.last = bestDiff
-        time.sleep(2*i if i > 0 else 2)
+    #    buySymbol, buyRate = buyExch.buy(bestKey)
+    #    self.last = bestDiff
+    #    time.sleep(max(2*i, 2))
 
-        return buySymbol, buyRate, bestKey
+    #    return buySymbol, buyRate, bestKey

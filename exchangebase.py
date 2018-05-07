@@ -54,39 +54,62 @@ class ExchangeBase:
     def buy(self, key):
         buySymbol = key + "-" + self.arbitrar.currency
         rate = self.getBuyPriceFor(key)
-        while True:
-            time.sleep(2)
-            os.system('clear')
-            last = self.getLastTradePrice(buySymbol)
-            print("Waiting for",buySymbol,"ticker on",self.getName(),"to be less than","%.4f" % rate)
-            print("Ticker:",last)
-            if last < rate:
-                break
+        #rate = self.buy_wait(buySymbol, rate);
         self.transact(self.arbitrar, self.wallets[key], 1/rate)
-        return buySymbol, rate * (1+self.fee)
+        return buySymbol, rate
 
     def sell(self):
         key = self.valueWallet.currency
         sellSymbol = key + "-" + self.arbitrar.currency
         rate = self.getSellPrice()
+        #rate = self.sell_wait(sellSymbol, rate);
+        self.transact(self.valueWallet, self.arbitrar, rate)
+        return sellSymbol, rate
+
+    def buy_wait(self, buySymbol, rate):
+        last = -1
         while True:
             time.sleep(2)
-            os.system('clear')
-            last = self.getLastTradePrice(sellSymbol)
-            print("Waiting for",sellSymbol,"ticker on",self.getName(),"to be greater than","%.4f" % rate)
-            print("Ticker:",last)
-            if last > rate:
-                break
-        self.transact(self.valueWallet, self.arbitrar, rate)
-        return sellSymbol, rate * (1-self.fee)
+            try:
+                current = self.getLastTradePrice(buySymbol)
+                os.system('clear')
+                print("Waiting for",buySymbol,"ticker on",self.getName(),"to be less than","%.4f" % rate)
+                print("Ticker:",current)
+                if current < rate:
+                    break
+                if last != -1 and current > last and current / rate > 1.002:
+                    rate = current / 1.002
+                last = current
+            except Exception as e:
+                pass
+        self.transact(self.arbitrar, self.wallets[key], 1/rate)
+        return rate
+
+    def sell_wait(self, sellSymbol, rate):
+        last = -1
+        while True:
+            time.sleep(2)
+            try:
+                os.system('clear')
+                current = self.getLastTradePrice(sellSymbol)
+                print("Waiting for",sellSymbol,"ticker on",self.getName(),"to be greater than","%.4f" % rate)
+                print("Ticker:",current)
+                if current > rate:
+                    break
+                if last != -1 and current < last and rate / current > 1.002:
+                    rate = current * 1.002
+                last = current
+            except Exception as e:
+                pass
+        return rate
 
     #exchange method that takes money from the sellWallet and adds
     #it to the buy wallet taking out the fee and multiplied by the rate
     def transact(self, sellWallet, buyWallet, rate):
         if(sellWallet == self.arbitrar):
-            self.value = sellWallet.amount * (1-self.fee)
+            self.value = sellWallet.amount * (1 - self.fee)
 
-        buyWallet.amount += sellWallet.amount * (1-self.fee) * rate
+        buyWallet.amount += sellWallet.amount * rate
         sellWallet.amount = 0
         self.valueWallet = buyWallet
 

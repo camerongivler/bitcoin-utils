@@ -15,8 +15,7 @@ exchanges["kraken"] = Kraken()
 #exchanges["gemini"] = Gemini()
 exchanges["gdax"] = Gdax()
 
-cutoff = 0.72 # %  - this will guarentee 0.2% per trade
-#cutoff = 0 # for testing
+cutoff = 0.05 # %gain on the trade
 
 exchangePairs = []
 for exchange in combinations(exchanges.values(), 2): # 2 for pairs, 3 for triplets, etc
@@ -91,8 +90,7 @@ while True:
                 totalValue = exchange[buyExchange].getValue() + exchange[sellExchange].getValue()
                 #last = difference between exchanges on last trade
                 realDiff = exchange.last - last
-                exchange1fee = 2 * exchange[buyExchange].getFee() * exchange[buyExchange].getValue() / totalValue
-                exchange2fee = 2 * exchange[sellExchange].getFee() * exchange[sellExchange].getValue() / totalValue
+
                 # divide by 2 bc we only make money on money in crypto,
                 # then again because we only make money in 1 direction (pos or neg)
                 realGain = (sellRate/buyRate - 1)/2*100
@@ -118,8 +116,8 @@ while True:
                     " on "+localtime+": \"" + str(e) + "\"")
             print(trades[-1])
             print(traceback.format_exc())
-            time.sleep(2*i if i > 0 else 2)
+            time.sleep(max(2*i, 2))
 
         # So we don't get rate limited by exchanges
-        time.sleep(2*i if i > 0 else 2)
+        time.sleep(max(2*i, 2))
 

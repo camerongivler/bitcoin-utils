@@ -36,9 +36,9 @@ class Kraken(ExchangeBase):
         self.valueWallet = self.wallets["USD"]
 
         # Maker fee
-        self.fee = 0.0016
+        #self.fee = 0.0016
         # Taker fee
-        #self.fee = 0.0026
+        self.fee = 0.0026
     
     def getLastTradePrice(self, symbol):
         mySymbol = symbol.replace("BTC", "XBT").replace("-","")
@@ -48,12 +48,16 @@ class Kraken(ExchangeBase):
 
     def getBuyPriceFor(self, key):
         # Maker order
-        return self.getHighestBidPriceFor(key)
+        #return self.getHighestBidPriceFor(key) * (1 - self.fee)) * (1 + self.fee)
+        # Taker order
+        return self.getMarketBuyPriceFor(key, self.arbitrar.amount * (1 - self.fee)) * (1 + self.fee)
 
     def getSellPrice(self):
         key = self.valueWallet.currency
         # Maker order
-        return self.getLowestAskPriceFor(key)
+        #return self.getLowestAskPriceFor(key) * (1 - self.fee)) * (1 - self.fee)
+        # Taker order
+        return self.getMarketSellPriceFor(key, self.wallets[key].amount * (1 - self.fee)) * (1 - self.fee)
 
     def getHighestBidPriceFor(self, key):
         symbol = key + "-" + self.arbitrar.currency
