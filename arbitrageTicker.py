@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-import os, time
-from wallet import Wallet
-from krakenapi import Kraken
-from geminiapi import Gemini
-from gdaxapi import Gdax
+import os
+import time
 from itertools import combinations
+
+from gdaxapi import Gdax
+from geminiapi import Gemini
+from krakenapi import Kraken
+from wallet import Wallet
 
 maxDiff = 0
 maxDiffp = 0
@@ -15,32 +17,28 @@ minSymbol = ""
 maxExchange = ""
 minExchange = ""
 
-gdaxWallets = {}
-gdaxWallets["exchange"] = Gdax()
-gdaxWallets["LTC"] = Wallet("gdax", "LTC", 2.835)
-gdaxWallets["ETH"] = Wallet("gdax", "ETH", 0.734)
-gdaxWallets["BCH"] = Wallet("gdax", "BCH", 0.503)
-gdaxWallets["BTC"] = Wallet("gdax", "BTC", 0.503)
-gdaxWallets["USD"] = Wallet("gdax", "USD", 500)
+gdaxWallets = {"exchange": Gdax(),
+               "LTC": Wallet("gdax", "LTC", 2.835),
+               "ETH": Wallet("gdax", "ETH", 0.734),
+               "BCH": Wallet("gdax", "BCH", 0.503),
+               "BTC": Wallet("gdax", "BTC", 0.503),
+               "USD": Wallet("gdax", "USD", 500)}
 
-geminiWallets = {}
-geminiWallets["exchange"] = Gemini()
-geminiWallets["ETH"] = Wallet("gemini", "ETH", 0.734)
-geminiWallets["BTC"] = Wallet("gemini", "BTC", 0.503)
-geminiWallets["USD"] = Wallet("gemini", "USD", 500)
+geminiWallets = {"exchange": Gemini(),
+                 "ETH": Wallet("gemini", "ETH", 0.734),
+                 "BTC": Wallet("gemini", "BTC", 0.503),
+                 "USD": Wallet("gemini", "USD", 500)}
 
-krakenWallets = {}
-krakenWallets["exchange"] = Kraken()
-krakenWallets["LTC"] = Wallet("kraken", "LTC", 2.835)
-krakenWallets["ETH"] = Wallet("kraken", "ETH", 0.734)
-krakenWallets["BCH"] = Wallet("kraken", "BCH", 0.503)
-krakenWallets["BTC"] = Wallet("kraken", "BTC", 0.503)
-krakenWallets["USD"] = Wallet("kraken", "USD", 500)
+krakenWallets = {"exchange": Kraken(),
+                 "LTC": Wallet("kraken", "LTC", 2.835),
+                 "ETH": Wallet("kraken", "ETH", 0.734),
+                 "BCH": Wallet("kraken", "BCH", 0.503),
+                 "BTC": Wallet("kraken", "BTC", 0.503),
+                 "USD": Wallet("kraken", "USD", 500)}
 
-exchanges = {}
-exchanges["kraken"] = krakenWallets
-exchanges["gdax"] = gdaxWallets
-#exchanges["gemini"] = geminiWallets
+exchanges = {"kraken": krakenWallets, "gdax": gdaxWallets}
+
+# exchanges["gemini"] = geminiWallets
 
 arbitrar = "USD"
 
@@ -51,17 +49,17 @@ while True:
         if exchange1 == exchange2: continue
         for key in exchanges[exchange1].keys():
             if key == arbitrar or key == "exchange": continue
-            if not key in exchanges[exchange2].keys(): continue
+            if key not in exchanges[exchange2].keys(): continue
 
             first = exchanges[exchange1]["exchange"]
             second = exchanges[exchange2]["exchange"]
 
             symbol = key + "-" + arbitrar
-            price1 = first.getLastTradePrice(symbol)
-            price2 = second.getLastTradePrice(symbol)
+            price1 = first.get_last_trade_price(symbol)
+            price2 = second.get_last_trade_price(symbol)
 
             diff = price2 - price1
-            diffp = diff / (price1  if price1 < price2 else price1) * 100
+            diffp = diff / (price1 if price1 < price2 else price1) * 100
 
             if diffp > maxDiffp:
                 maxDiff = diff
@@ -75,16 +73,15 @@ while True:
                 minSymbol = symbol
                 minExchange = exchange1 + "-" + exchange2
 
-
             os.system('clear')
 
             # Print higher first
             print("Symbol     :", symbol)
-            if(price1 >= price2):
-                print(exchange1.ljust(10),":", "%.2e" % price1)
-            print(exchange2.ljust(10),":", "%.2e" % price2)
-            if(price1 < price2) :
-                print(exchange1.ljust(10),":", "%.2e" % price1)
+            if price1 >= price2:
+                print(exchange1.ljust(10), ":", "%.2e" % price1)
+            print(exchange2.ljust(10), ":", "%.2e" % price2)
+            if price1 < price2:
+                print(exchange1.ljust(10), ":", "%.2e" % price1)
 
             print("Diff       :", "%.2e" % diff)
             print("Diff %     :", str("%.3f" % diffp) + "%\n")

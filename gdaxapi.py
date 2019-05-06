@@ -1,6 +1,8 @@
+import gdax
+
 from exchangebase import ExchangeBase
 from wallet import Wallet
-import gdax
+
 
 # We throttle public endpoints by IP: 3 requests per second, up to 6 requests per second in bursts.
 class Gdax(ExchangeBase):
@@ -10,39 +12,38 @@ class Gdax(ExchangeBase):
         super().__init__()
         self.wallets["LTC"] = Wallet("LTC", 0)
         self.wallets["ETH"] = Wallet("ETH", 0)
-        self.wallets["BCH"] = Wallet("BCH", 0.3040438)
+        self.wallets["BCH"] = Wallet("BCH", 0.2985074627)
         self.wallets["BTC"] = Wallet("BTC", 0)
         self.wallets["USD"] = Wallet("USD", 0)
         self.valueWallet = self.wallets["BCH"]
 
         self.fee = 0.0025
-        #self.fee = 0
+        # self.fee = 0
 
-    def getLastTradePrice(self, symbol):
-        ticker = {}
+    def get_last_trade_price(self, symbol):
         ticker = self.g.get_product_ticker(symbol)
         return float(ticker['price'])
 
-    def getBuyPriceFor(self, key):
-        return self.getMarketBuyPriceFor(key, self.arbitrar.amount * (1 - self.fee)) * (1 + self.fee)
-        #return self.getHighestBidPriceFor(key) * (1 - self.fee)) * (1 + self.fee)
+    def get_buy_price_for(self, key):
+        return self.get_market_buy_price_for(key, self.arbitrar.amount * (1 - self.fee)) * (1 + self.fee)
+        # return self.getHighestBidPriceFor(key) * (1 - self.fee)) * (1 + self.fee)
 
-    def getSellPrice(self):
+    def get_sell_price(self):
         key = self.valueWallet.currency
-        return self.getMarketSellPriceFor(key, self.wallets[key].amount * (1 - self.fee)) * (1 - self.fee)
-        #return self.getLowestAskPriceFor(key) * (1 - self.fee)) * (1 - self.fee)
+        return self.get_market_sell_price_for(key, self.wallets[key].amount * (1 - self.fee)) * (1 - self.fee)
+        # return self.getLowestAskPriceFor(key) * (1 - self.fee)) * (1 - self.fee)
 
-    def getHighestBidPriceFor(self, key):
+    def get_highest_bid_price_for(self, key):
         symbol = key + "-" + self.arbitrar.currency
         book = self.g.get_product_order_book(symbol, level=2)
         return float(book['bids'][0][0])
 
-    def getLowestAskPriceFor(self, key):
+    def get_lowest_ask_price_for(self, key):
         symbol = key + "-" + self.arbitrar.currency
         book = self.g.get_product_order_book(symbol, level=2)
         return float(book['asks'][0][0])
 
-    def getMarketBuyPriceFor(self, key, amount):
+    def get_market_buy_price_for(self, key, amount):
         symbol = key + "-" + self.arbitrar.currency
         book = self.g.get_product_order_book(symbol, level=2)
         fullAmount = amount
@@ -56,7 +57,7 @@ class Gdax(ExchangeBase):
             i += 1
         return price
 
-    def getMarketSellPriceFor(self, key, amount):
+    def get_market_sell_price_for(self, key, amount):
         symbol = key + "-" + self.arbitrar.currency
         book = self.g.get_product_order_book(symbol, level=2)
         fullAmount = amount
@@ -70,5 +71,5 @@ class Gdax(ExchangeBase):
             i += 1
         return price
 
-    def getName(self):
+    def get_name(self):
         return "gdax"

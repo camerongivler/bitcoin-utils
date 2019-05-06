@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
-import gdax, os, time, json
+import gdax
+import json
+import os
+import time
 
 public_client = gdax.PublicClient()
 
 keys = json.load(open('apiKeys.json'))
 auth_client = gdax.AuthenticatedClient(**keys)
 
-#products = public_client.get_product_order_book('BTC-USD')
-#asks = products["asks"][0]
-#bids = products["bids"][0]
+# products = public_client.get_product_order_book('BTC-USD')
+# asks = products["asks"][0]
+# bids = products["bids"][0]
 
 while True:
 
@@ -17,7 +20,7 @@ while True:
 
     for acc in accounts:
         currency = acc['currency']
-        ticker = public_client.get_product_ticker(currency+'-USD')
+        ticker = public_client.get_product_ticker(currency + '-USD')
         if ticker.get('message', 'found') != 'found':
             continue
         wallets.append({'currency': acc['currency'],

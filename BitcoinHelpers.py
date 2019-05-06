@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import gdax
+
 
 # The purpose of this class is to provide a common interface for buying and selling bitcoin,
 # either now, or at any time in the past.  The rate of time is irrelevant to this interface
@@ -11,23 +11,22 @@ class TradingInterface:
         self.public_client = public_client
         self.auth_client = auth_client
 
-
-    def getCurrentTime(self):
+    def get_current_time(self):
         pass
 
-    def getCurrentBitcoinPrice(self):
+    def get_current_price(self):
         pass
 
-    def getBitcoinBalance(self):
+    def get_bitcoin_balance(self):
         pass
 
-    def getUsdBalance(self):
+    def get_usd_balance(self):
         pass
 
-    def buy(self, numBitcoin):
+    def buy(self, amount):
         pass
 
-    def sell(self, numBitcoin):
+    def sell(self, amount):
         pass
 
 
@@ -36,30 +35,29 @@ class RealTimeTrader(TradingInterface):
     def __init__(self, public_client, auth_client):
         TradingInterface.__init__(self, public_client, auth_client)
 
-
-    def getCurrentTime(self):
+    def get_current_time(self):
         return self.public_client.getTime()["epoch"]
 
-    def getCurrentBitcoinPrice(self):
-        ticker = self.public_client.get_product_ticker(currency+'-USD')
+    def get_current_price(self):
+        ticker = self.public_client.get_product_ticker('BTC-USD')
         if ticker.get('message', 'found') != 'found':
             return None
         return float(ticker['price'])
 
-    def getBitcoinBalance(self):
-        accounts = self.auth_client.get_accounts()
+    def get_bitcoin_balance(self):
+        acc = self.auth_client.get_accounts()
         return float(acc['BTC']['balance'])
 
-    def getUsdBalance(self):
-        accounts = self.auth_client.get_accounts()
+    def get_usd_balance(self):
+        acc = self.auth_client.get_accounts()
         return float(acc['USD']['balance'])
 
-    def buy(self, numBitcoin, price):
+    def buy(self, amount, price):
         self.auth_client.buy(price=price,
-               size=numBitcoin,
-               product_id='BTC-USD')
+                             size=amount,
+                             product_id='BTC-USD')
 
-    def sell(self, numBitcoin, price):
+    def sell(self, amount, price):
         self.auth_client.sell(price=price,
-               size=numBitcoin,
-               product_id='BTC-USD')
+                              size=amount,
+                              product_id='BTC-USD')

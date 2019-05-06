@@ -1,8 +1,9 @@
-from exchangebase import ExchangeBase
 import krakenex
-from wallet import Wallet
 from pykrakenapi import KrakenAPI
-    
+
+from exchangebase import ExchangeBase
+from wallet import Wallet
+
 # Every user of our API has a "call counter" which starts at 0.
 
 # Ledger/trade history calls increase the counter by 2.
@@ -16,11 +17,12 @@ from pykrakenapi import KrakenAPI
 # I am tier 2 - 1 call every 3 seconds
 
 symbols = {
-        'BTC-USD': "XXBTZUSD",
-        'ETH-USD': "XETHZUSD",
-        'LTC-USD': "XLTCZUSD",
-        'BCH-USD': "BCHUSD"
-        }
+    'BTC-USD': "XXBTZUSD",
+    'ETH-USD': "XETHZUSD",
+    'LTC-USD': "XLTCZUSD",
+    'BCH-USD': "BCHUSD"
+}
+
 
 class Kraken(ExchangeBase):
     api = krakenex.API()
@@ -36,42 +38,42 @@ class Kraken(ExchangeBase):
         self.valueWallet = self.wallets["USD"]
 
         # Maker fee
-        #self.fee = 0.0016
+        # self.fee = 0.0016
         # Taker fee
         self.fee = 0.0026
-    
-    def getLastTradePrice(self, symbol):
-        mySymbol = symbol.replace("BTC", "XBT").replace("-","")
+
+    def get_last_trade_price(self, symbol):
+        mySymbol = symbol.replace("BTC", "XBT").replace("-", "")
         krakenTicker = self.k.get_ticker_information(mySymbol)
         # c = last trade
         return float(krakenTicker['c'][0][0])
 
-    def getBuyPriceFor(self, key):
+    def get_buy_price_for(self, key):
         # Maker order
-        #return self.getHighestBidPriceFor(key) * (1 - self.fee)) * (1 + self.fee)
+        # return self.getHighestBidPriceFor(key) * (1 - self.fee)) * (1 + self.fee)
         # Taker order
-        return self.getMarketBuyPriceFor(key, self.arbitrar.amount * (1 - self.fee)) * (1 + self.fee)
+        return self.get_market_buy_price_for(key, self.arbitrar.amount * (1 - self.fee)) * (1 + self.fee)
 
-    def getSellPrice(self):
+    def get_sell_price(self):
         key = self.valueWallet.currency
         # Maker order
-        #return self.getLowestAskPriceFor(key) * (1 - self.fee)) * (1 - self.fee)
+        # return self.getLowestAskPriceFor(key) * (1 - self.fee)) * (1 - self.fee)
         # Taker order
-        return self.getMarketSellPriceFor(key, self.wallets[key].amount * (1 - self.fee)) * (1 - self.fee)
+        return self.get_market_sell_price_for(key, self.wallets[key].amount * (1 - self.fee)) * (1 - self.fee)
 
-    def getHighestBidPriceFor(self, key):
+    def get_highest_bid_price_for(self, key):
         symbol = key + "-" + self.arbitrar.currency
         pair = symbols[symbol]
         book = self.k.get_order_book(pair)[1].astype('float').sort_values(by=['price'], ascending=False)
         return float(book.iloc[0]['price'])
 
-    def getLowestAskPriceFor(self, key):
+    def get_lowest_ask_price_for(self, key):
         symbol = key + "-" + self.arbitrar.currency
         pair = symbols[symbol]
         book = self.k.get_order_book(pair)[0].astype('float').sort_values(by=['price'])
         return float(book.iloc[0]['price'])
 
-    def getMarketBuyPriceFor(self, key, amount):
+    def get_market_buy_price_for(self, key, amount):
         symbol = key + "-" + self.arbitrar.currency
         pair = symbols[symbol]
         book = self.k.get_order_book(pair)[0].astype('float').sort_values(by=['price'])
@@ -86,7 +88,7 @@ class Kraken(ExchangeBase):
             i += 1
         return price
 
-    def getMarketSellPriceFor(self, key, amount):
+    def get_market_sell_price_for(self, key, amount):
         symbol = key + "-" + self.arbitrar.currency
         pair = symbols[symbol]
         book = self.k.get_order_book(pair)[1].astype('float').sort_values(by=['price'], ascending=False)
@@ -101,5 +103,5 @@ class Kraken(ExchangeBase):
             i += 1
         return price
 
-    def getName(self):
+    def get_name(self):
         return "kraken"

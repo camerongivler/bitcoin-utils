@@ -1,10 +1,15 @@
+import gdax
+import json
+import time
+
 from exchangebase import ExchangeBase
 from wallet import Wallet
-import gdax, json, time
+
 
 class InsufficientFundsError(Exception):
     def __init__(self, message):
         super().__init__(message)
+
 
 class Gdax(ExchangeBase):
 
@@ -25,7 +30,7 @@ class Gdax(ExchangeBase):
 
         self.fee = 0.0025
 
-    def getLastTradePrice(self, symbol):
+    def get_last_trade_price(self, symbol):
         ticker = {}
         ticker = self.public_client.get_product_ticker(symbol)
         return float(ticker['price'])
@@ -36,7 +41,7 @@ class Gdax(ExchangeBase):
         order = self.auth_client.buy(product_id=buySymbol, type='market', funds=amount)
         if 'message' in order.keys():
             raise InsufficientFundsError(order['message'])
-        
+
         settled = order['settled']
         while not settled:
             order = self.auth_client.get_order(order['id'])
@@ -49,7 +54,7 @@ class Gdax(ExchangeBase):
 
         # NOTE: This includes the fee!
         rate = float(order['executed_value']) / float(order['filled_size'])
-        
+
         return buySymbol, rate
 
     def sell(self):
@@ -71,8 +76,8 @@ class Gdax(ExchangeBase):
 
         # NOTE: This includes the fee!
         rate = float(order['executed_value']) / float(order['filled_size'])
-        
+
         return sellSymbol, rate
 
-    def getName(self):
+    def get_name(self):
         return "gdax"
