@@ -31,14 +31,13 @@ class Gdax(ExchangeBase):
         self.fee = 0.0025
 
     def get_last_trade_price(self, symbol):
-        ticker = {}
         ticker = self.public_client.get_product_ticker(symbol)
         return float(ticker['price'])
 
     def buy(self, key):
-        buySymbol = key + "-" + self.arbitrar.currency
+        buy_symbol = key + "-" + self.arbitrar.currency
         amount = str(self.arbitrar.amount // 0.01 / 100)
-        order = self.auth_client.buy(product_id=buySymbol, type='market', funds=amount)
+        order = self.auth_client.buy(product_id=buy_symbol, type='market', funds=amount)
         if 'message' in order.keys():
             raise InsufficientFundsError(order['message'])
 
@@ -55,12 +54,12 @@ class Gdax(ExchangeBase):
         # NOTE: This includes the fee!
         rate = float(order['executed_value']) / float(order['filled_size'])
 
-        return buySymbol, rate
+        return buy_symbol, rate
 
     def sell(self):
-        sellSymbol = self.valueWallet.currency + "-" + self.arbitrar.currency
+        sell_symbol = self.valueWallet.currency + "-" + self.arbitrar.currency
         amount = str(self.valueWallet.amount)
-        order = self.auth_client.sell(product_id=sellSymbol, type='market', size=amount)
+        order = self.auth_client.sell(product_id=sell_symbol, type='market', size=amount)
         if 'message' in order.keys():
             raise InsufficientFundsError(order['message'])
 
@@ -77,7 +76,7 @@ class Gdax(ExchangeBase):
         # NOTE: This includes the fee!
         rate = float(order['executed_value']) / float(order['filled_size'])
 
-        return sellSymbol, rate
+        return sell_symbol, rate
 
     def get_name(self):
         return "gdax"

@@ -5,14 +5,13 @@ from exchangebase import ExchangeBase
 from wallet import Wallet
 
 # Every user of our API has a "call counter" which starts at 0.
-
 # Ledger/trade history calls increase the counter by 2.
-
 # Place/cancel order calls do not affect the counter.
-
 # All other API calls increase the counter by 1.
-
-# The user's counter is reduced every couple of seconds, and if the counter exceeds the user's maximum API access is suspended for 15 minutes. Tier 2 users have a maximum of 15 and their count gets reduced by 1 every 3 seconds. Tier 3 and 4 users have a maximum of 20; the count is reduced by 1 every 2 seconds for tier 3 users, and is reduced by 1 every 1 second for tier 4 users.
+# The user's counter is reduced every couple of seconds, and if the counter exceeds the user's maximum API access
+# is suspended for 15 minutes. Tier 2 users have a maximum of 15 and their count gets reduced by 1 every 3 seconds.
+# Tier 3 and 4 users have a maximum of 20; the count is reduced by 1 every 2 seconds for tier 3 users, and is reduced
+# by 1 every 1 second for tier 4 users.
 
 # I am tier 2 - 1 call every 3 seconds
 
@@ -43,10 +42,10 @@ class Kraken(ExchangeBase):
         self.fee = 0.0026
 
     def get_last_trade_price(self, symbol):
-        mySymbol = symbol.replace("BTC", "XBT").replace("-", "")
-        krakenTicker = self.k.get_ticker_information(mySymbol)
+        my_symbol = symbol.replace("BTC", "XBT").replace("-", "")
+        kraken_ticker = self.k.get_ticker_information(my_symbol)
         # c = last trade
-        return float(krakenTicker['c'][0][0])
+        return float(kraken_ticker['c'][0][0])
 
     def get_buy_price_for(self, key):
         # Maker order
@@ -77,14 +76,14 @@ class Kraken(ExchangeBase):
         symbol = key + "-" + self.arbitrar.currency
         pair = symbols[symbol]
         book = self.k.get_order_book(pair)[0].astype('float').sort_values(by=['price'])
-        fullAmount = amount
+        full_amount = amount
         price = i = 0
         while amount > 0:
             volume = float(book.iloc[i]['volume'])
-            thisPrice = float(book.iloc[i]['price'])
-            thisAmount = amount if amount < volume * thisPrice else volume * thisPrice
-            price += thisPrice * thisAmount / fullAmount
-            amount -= thisAmount
+            this_price = float(book.iloc[i]['price'])
+            this_amount = amount if amount < volume * this_price else volume * this_price
+            price += this_price * this_amount / full_amount
+            amount -= this_amount
             i += 1
         return price
 
@@ -92,14 +91,14 @@ class Kraken(ExchangeBase):
         symbol = key + "-" + self.arbitrar.currency
         pair = symbols[symbol]
         book = self.k.get_order_book(pair)[1].astype('float').sort_values(by=['price'], ascending=False)
-        fullAmount = amount
+        full_amount = amount
         price = i = 0
         while amount > 0:
             volume = float(book.iloc[i]['volume'])
-            thisPrice = float(book.iloc[i]['price'])
-            thisAmount = amount if amount < volume else volume
-            price += thisPrice * thisAmount / fullAmount
-            amount -= thisAmount
+            this_price = float(book.iloc[i]['price'])
+            this_amount = amount if amount < volume else volume
+            price += this_price * this_amount / full_amount
+            amount -= this_amount
             i += 1
         return price
 

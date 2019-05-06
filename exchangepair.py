@@ -20,9 +20,9 @@ class ExchangePair:
             raise IndexError("Exchange Pair contains indices 0 and 1")
 
     def get_diff(self, key):
-        buyExchange = (0 if self[0].arbitrar == self[0].valueWallet else 1)
+        buy_exchange = (0 if self[0].arbitrar == self[0].valueWallet else 1)
         # symbol = key + "-" + self[0].arbitrar.currency
-        if buyExchange == 0:
+        if buy_exchange == 0:
             price1 = self[0].get_buy_price_for(key)
             price2 = self[1].get_sell_price()
         else:

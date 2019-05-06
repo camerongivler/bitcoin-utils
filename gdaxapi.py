@@ -46,28 +46,28 @@ class Gdax(ExchangeBase):
     def get_market_buy_price_for(self, key, amount):
         symbol = key + "-" + self.arbitrar.currency
         book = self.g.get_product_order_book(symbol, level=2)
-        fullAmount = amount
+        full_amount = amount
         price = i = 0
         while amount > 0:
-            thisPrice = float(book['asks'][i][0])
+            this_price = float(book['asks'][i][0])
             volume = float(book['asks'][i][1])
-            thisAmount = amount if amount < volume * thisPrice else volume * thisPrice
-            price += thisPrice * thisAmount / fullAmount
-            amount -= thisAmount
+            this_amount = amount if amount < volume * this_price else volume * this_price
+            price += this_price * this_amount / full_amount
+            amount -= this_amount
             i += 1
         return price
 
     def get_market_sell_price_for(self, key, amount):
         symbol = key + "-" + self.arbitrar.currency
         book = self.g.get_product_order_book(symbol, level=2)
-        fullAmount = amount
+        full_amount = amount
         price = i = 0
         while amount > 0:
-            thisPrice = float(book['bids'][i][0])
+            this_price = float(book['bids'][i][0])
             volume = float(book['bids'][i][1])
-            thisAmount = amount if amount < volume else volume
-            price += thisPrice * thisAmount / fullAmount
-            amount -= thisAmount
+            this_amount = amount if amount < volume else volume
+            price += this_price * this_amount / full_amount
+            amount -= this_amount
             i += 1
         return price
 
