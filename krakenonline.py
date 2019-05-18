@@ -6,7 +6,6 @@ from abc import ABC
 from pykrakenapi import KrakenAPI
 
 from exchangebase import ExchangeBase
-from wallet import Wallet
 
 
 class InsufficientFundsError(Exception):

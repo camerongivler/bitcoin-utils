@@ -14,6 +14,9 @@ class TradingInterface:
     def get_current_time(self):
         pass
 
+    def set_current_time(self, datetime):
+        pass
+
     def get_current_price(self):
         pass
 

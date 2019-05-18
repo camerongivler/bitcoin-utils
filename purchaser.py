@@ -3,7 +3,7 @@ import gdax
 import json
 import sys
 
-import BitcoinHelpers
+from TraderBot import TradingInterface
 
 public_client = gdax.PublicClient()
 
@@ -16,6 +16,6 @@ if len(sys.argv) != 3:
     print("Sorry, can't parse args")
     exit()
 
-trade = BitcoinHelpers.RealTimeTrader(public_client, auth_client)
+trade = TradingInterface.RealTimeTrader(public_client, auth_client)
 
 trade.buy(sys.argv[2], str(sys.argv[1]))
