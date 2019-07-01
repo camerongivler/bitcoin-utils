@@ -73,5 +73,7 @@ try:
 
         last = curr
         trader.increment_time()
+        if trader.is_finished():
+            break
 except KeyboardInterrupt:
     pass

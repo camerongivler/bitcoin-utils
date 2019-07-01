@@ -8,7 +8,7 @@ class TradingAlgorithm:
             return 0
 
         buy = 0
-        if current < previous * 0.4:
+        if current < previous * 0.95:
             return (usd * (1 - current / previous) * 2) / current
 
         if buy > usd / current * 0.5:
@@ -22,7 +22,7 @@ class TradingAlgorithm:
             return 0
 
         sell = 0
-        if current > previous * 1.08:
+        if current > previous * 1.05:
             sell = btc * (current / previous - 1)
 
         if sell > btc * 0.5:

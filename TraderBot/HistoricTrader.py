@@ -34,7 +34,6 @@ class HistoricTrader(TradingInterface):
         self.current_time += timedelta(seconds=self.delta)
         time.sleep(0.5)
 
-
 if __name__ == '__main__':
     public_client = gdax.PublicClient()
 

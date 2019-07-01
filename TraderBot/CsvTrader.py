@@ -49,7 +49,10 @@ class CsvTrader(TradingInterface):
         return self.prices[self.row]['volume']
 
     def increment_time(self):
-        self.row += 1
+        self.row += 24
+
+    def is_finished(self):
+        return self.row >= len(self.prices)
 
 
 if __name__ == '__main__':

@@ -36,6 +36,9 @@ class TradingInterface:
     def sell(self, amount):
         pass
 
+    def is_finished(self):
+        return False
+
 
 class RealTimeTrader(TradingInterface):
 
