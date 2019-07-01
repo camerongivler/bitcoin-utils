@@ -5,6 +5,7 @@ from datetime import datetime
 import time
 import gdax
 
+from CsvTrader import CsvTrader
 from TraderBot.HistoricTrader import HistoricTrader
 from TradingAlgorithm import TradingAlgorithm
 from wallet import Wallet
@@ -16,7 +17,8 @@ keys = json.load(open('../gdaxKey.json'))
 # Sandbox API
 auth_client = gdax.AuthenticatedClient(**keys)
 
-trader = HistoricTrader(public_client, auth_client)
+#trader = HistoricTrader(public_client, auth_client)
+trader = CsvTrader()
 
 current_time = datetime(2016, 1, 1, 12, 30)
 
@@ -32,7 +34,7 @@ last = None
 try:
     while True:
         curr = trader.get_current_price()
-        print(str(trader.get_current_time().strftime("%m/%d/%y %H:%M")) + ' - $' + str(curr))
+        print(str(trader.get_current_time()) + ' - $' + str(curr))
 
         if curr is None:
             continue
@@ -65,11 +67,11 @@ try:
         print('orig     : ' + str(orig_value))
         print('mult     : ' + str(mult))
         print('HODL     : ' + str(hold))
-        print('win pct  : ' + str(mult/hold))
+        print('win pct  : ' + str(round((mult/hold - 1), 5) * 100) + '%')
 
         sp.call('clear', shell=True)
 
         last = curr
-        time.sleep(0.5)
+        trader.increment_time()
 except KeyboardInterrupt:
     pass

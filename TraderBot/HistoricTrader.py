@@ -13,7 +13,7 @@ class HistoricTrader(TradingInterface):
         TradingInterface.__init__(self, public, auth)
 
     def get_current_time(self):
-        return self.current_time
+        return self.current_time.strftime("%m/%d/%y %H:%M")
 
     def set_current_time(self, time):
         self.current_time = time
@@ -23,7 +23,6 @@ class HistoricTrader(TradingInterface):
 
         ticker = self.public_client.get_product_historic_rates('BTC-USD', curr_time.isoformat(),
                                                                curr_time + timedelta(seconds=self.delta), self.delta)
-        self.increment_time()
 
         if 'message' in ticker:
             print(ticker['message'])
@@ -33,6 +32,7 @@ class HistoricTrader(TradingInterface):
 
     def increment_time(self):
         self.current_time += timedelta(seconds=self.delta)
+        time.sleep(0.5)
 
 
 if __name__ == '__main__':

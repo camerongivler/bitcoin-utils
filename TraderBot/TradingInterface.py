@@ -15,7 +15,11 @@ class TradingInterface:
         pass
 
     def set_current_time(self, datetime):
-        pass
+        print("ERROR: Set current time not implemented")
+
+    def get_current_volume(self):
+        print("ERROR: Get current volume not implemented")
+        return None
 
     def get_current_price(self):
         pass
